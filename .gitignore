@@ -1,3 +1,4 @@
 news-grabber/build/
 news-grabber/.gradle/
 news-grabber/.idea/
+news-grabber/src/main/resources/
