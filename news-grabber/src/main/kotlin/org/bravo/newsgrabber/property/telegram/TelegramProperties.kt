@@ -13,16 +13,16 @@ data class TelegramProperties(
     val clientDeviceModel: String = "nomatterwhatmodel",
     val clientDeviceSystemVersion: String = "10",
     val languageCode: String = "en",
-    val apiId: Int = telegramConfiguration[telegramProperties.apiId],
-    val apiHash: String = telegramConfiguration[telegramProperties.apiHash],
-    val phoneNumber: String = telegramConfiguration[telegramProperties.phoneNumber]
+    val apiId: Int = telegramConfiguration[telegram.apiId],
+    val apiHash: String = telegramConfiguration[telegram.apiHash],
+    val phoneNumber: String = telegramConfiguration[telegram.phoneNumber]
 )
 
 private val telegramConfiguration = ConfigurationProperties.systemProperties() overriding
     EnvironmentVariables() overriding
     ConfigurationProperties.fromResource("application.properties")
 
-private object telegramProperties : PropertyGroup() {
+private object telegram : PropertyGroup() {
     val apiId by intType
     val apiHash by stringType
     val phoneNumber by stringType // syntax like "+79991237654"

@@ -3,7 +3,7 @@ package org.bravo.newsgrabber.service.grabber
 import org.bravo.newsgrabber.model.News
 
 interface NewsGrabber {
-    fun processed(): Boolean
-    fun saveToDb(news: News): Boolean
-    fun grab(): News
+    suspend fun processed(): Boolean
+    suspend fun saveToDb(news: List<News>): Boolean
+    suspend fun grab(): List<News>
 }

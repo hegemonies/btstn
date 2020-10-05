@@ -1,7 +1,15 @@
 package org.bravo.newsgrabber
 
-import org.bravo.newsgrabber.property.telegram.TelegramProperties
+import kotlinx.coroutines.runBlocking
+import org.bravo.newsgrabber.service.auth.TelegramClientAuthenticate
+import org.bravo.newsgrabber.service.news.NewsService
 
 fun main() {
-    println(TelegramProperties().toString())
+    // println(TelegramProperties().toString())
+    runCatching {
+        // TelegramClientAuthenticate.auth()
+        runBlocking { NewsService.runService() }
+    }.getOrElse { error ->
+        println("Error: ${error.message}")
+    }
 }

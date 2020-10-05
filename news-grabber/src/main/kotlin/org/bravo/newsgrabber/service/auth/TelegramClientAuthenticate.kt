@@ -1,9 +1,10 @@
 package org.bravo.newsgrabber.service.auth
 
 import org.bravo.newsgrabber.service.telegram.TelegramService
+import org.slf4j.LoggerFactory
 import java.util.*
 
-class TelegramClientAuthenticate : Authenticate {
+object TelegramClientAuthenticate : Authenticate {
 
     override fun auth() {
         runCatching {
@@ -12,14 +13,16 @@ class TelegramClientAuthenticate : Authenticate {
             val code = Scanner(System.`in`).nextLine()
 
             val authorization = TelegramService.signIn(
-                codeFromMessage = code,
-                phoneCode = sentCode.phoneCodeHash
+                codeFromMessage = sentCode.phoneCodeHash,
+                phoneCode = code
             )
             val self = authorization.user.asUser
 
-            println("You are now signed in as ${self.firstName} ${self.lastName} @ ${self.username}")
+            logger.info("You are now signed in as ${self.firstName} ${self.lastName} @ ${self.username}")
         }.getOrElse { error ->
-            println("Error auth: ${error.message}")
+            logger.error("Error auth: ${error.message}")
         }
     }
+
+    private val logger = LoggerFactory.getLogger(this::class.java)
 }

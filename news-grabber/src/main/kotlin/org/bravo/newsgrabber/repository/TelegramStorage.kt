@@ -8,8 +8,8 @@ import org.apache.commons.io.FileUtils
 import java.io.File
 
 class TelegramStorage(
-    private val authKeyFile: File = File("src/resources/auth.key"),
-    private val nearestDcFile: File = File("src/resources/dc.save")
+    private val authKeyFile: File = File("news-grabber/src/main/resources/auth.key"),
+    private val nearestDcFile: File = File("news-grabber/src/main/resources/dc.save")
 ) : TelegramApiStorage {
 
     override fun deleteAuthKey() {

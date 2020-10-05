@@ -7,7 +7,6 @@ import com.github.badoualy.telegram.api.utils.toInputPeer
 import com.github.badoualy.telegram.tl.api.TLAbsChat
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty
 import com.github.badoualy.telegram.tl.api.TLMessage
-import com.github.badoualy.telegram.tl.api.TLMessageService
 import com.github.badoualy.telegram.tl.api.TLPeerUser
 import com.github.badoualy.telegram.tl.api.TLUser
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization
@@ -78,7 +77,7 @@ object TelegramService {
                 0,
                 0,
                 TLInputPeerEmpty(),
-                1
+                Int.MAX_VALUE
             )
 
             val tlAbsPeer = tlAbsDialogs.dialogs[chatNumber].peer
@@ -98,7 +97,7 @@ object TelegramService {
                 0,
                 0,
                 0,
-                10,
+                Int.MAX_VALUE,
                 0,
                 0
             )
@@ -109,14 +108,14 @@ object TelegramService {
                 val messageContent =
                     when (it) {
                         is TLMessage -> it.message
-                        is TLMessageService -> "Service: ${it.action}"
                         else -> ""
                     }
 
                 news.add(
                     News(
                         message = messageContent,
-                        from = NewsSource.Telegram
+                        from = NewsSource.Telegram,
+                        objectId = it.id
                     )
                 )
             }
@@ -127,5 +126,5 @@ object TelegramService {
             emptyList<News>()
         }
 
-    private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    private val logger = LoggerFactory.getLogger(this::class.java)
 }
