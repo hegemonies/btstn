@@ -2,7 +2,12 @@ package org.bravo.newsgrabber.service.grabber
 
 import kotlinx.coroutines.delay
 import org.bravo.newsgrabber.model.News
+import org.bravo.newsgrabber.model.NewsTable
+import org.bravo.newsgrabber.model.mapper.mapToNewsDto
 import org.bravo.newsgrabber.service.telegram.TelegramService
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
 class TelegramGrabber : NewsGrabber {
@@ -11,16 +16,31 @@ class TelegramGrabber : NewsGrabber {
         saveToDb(grab())
 
     override suspend fun saveToDb(news: List<News>): Boolean {
-        // TODO("Not yet implemented")
+        transaction {
+            news.forEach { newsFromList ->
+                if (newsFromList.message.isNotEmpty()) {
+                    NewsTable.select { NewsTable.objectId eq newsFromList.objectId }
+                        .map { mapToNewsDto(it) }
+                        .firstOrNull()
+                        ?: NewsTable.insert {
+                            it[message] = newsFromList.message
+                            it[newsSource] = newsFromList.source
+                            it[objectId] = newsFromList.objectId
+                        }
+                }
+            }
+            commit()
+        }
+
         return true
     }
 
     override suspend fun grab(): List<News> {
-        return (1..30).map { chatNumber ->
+        return (1..50).map { chatNumber ->
             logger.info("Read messages from chat #$chatNumber")
             TelegramService.readAllNewsFrom(chatNumber).also { news ->
-                logger.info("news from chat #$chatNumber: $news")
-                delay(2000)
+                // logger.info("news from chat #$chatNumber: $news")
+                delay(4000)
             }
         }.reduce { acc, list ->
             acc + list

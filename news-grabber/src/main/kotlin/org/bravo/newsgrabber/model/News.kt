@@ -2,6 +2,7 @@ package org.bravo.newsgrabber.model
 
 data class News(
     val message: String,
-    val from: NewsSource,
-    val objectId: Int
+    val source: NewsSource,
+    val objectId: Long
 )
+

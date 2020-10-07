@@ -114,8 +114,8 @@ object TelegramService {
                 news.add(
                     News(
                         message = messageContent,
-                        from = NewsSource.Telegram,
-                        objectId = it.id
+                        source = NewsSource.Telegram,
+                        objectId = it.id.toLong()
                     )
                 )
             }

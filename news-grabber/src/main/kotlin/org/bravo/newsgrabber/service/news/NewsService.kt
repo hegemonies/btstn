@@ -18,7 +18,7 @@ object NewsService {
     suspend fun runService() {
         withContext(Dispatchers.IO) {
             while (true) {
-                logger.info(MarkerFactory.getMarker("news-service"), "Start grabber services...")
+                logger.info("Start grabber services...")
 
                 val elapsedTime = measureTimeMillis {
                     grabbers.add(
@@ -30,10 +30,7 @@ object NewsService {
                     grabbers.joinAll()
                 }
 
-                logger.info(
-                    MarkerFactory.getMarker("news-service"),
-                    "Finish grabber services for $elapsedTime millis"
-                )
+                logger.info("Finish grabber services for $elapsedTime millis")
 
                 delay(20000)
             }

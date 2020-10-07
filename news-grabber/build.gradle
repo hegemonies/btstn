@@ -1,6 +1,7 @@
 buildscript {
     ext {
         kotlinVersion = "1.4.0"
+        exposedVersion = "0.24.1"
     }
 }
 
@@ -12,17 +13,33 @@ group 'org.bravo'
 version '0.1'
 
 repositories {
+    jcenter()
     mavenCentral()
     maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     implementation(
+            // kotlin
             "org.jetbrains.kotlin:kotlin-stdlib",
-            "com.github.badoualy:kotlogram:1.0.0-RC3",
-            "commons-io:commons-io:2.8.0",
-            "com.natpryce:konfig:1.6.10.0",
             "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
             "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.9",
+
+            // telegram client api
+            "com.github.badoualy:kotlogram:1.0.0-RC3",
+
+            // work with files
+            "commons-io:commons-io:2.8.0",
+
+            // work with config file
+            "com.natpryce:konfig:1.6.10.0",
+
+            // database library
+            "org.jetbrains.exposed:exposed-core:0.24.1",
+            "org.jetbrains.exposed:exposed-dao:0.24.1",
+            "org.jetbrains.exposed:exposed-jdbc:0.24.1",
+
+            // postgresql driver
+            "org.postgresql:postgresql:42.2.16"
     )
 }
