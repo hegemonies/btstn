@@ -1,13 +1,17 @@
 buildscript {
     ext {
-        kotlinVersion = "1.4.0"
+        kotlinVersion = "1.4.10"
         exposedVersion = "0.24.1"
     }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
+    id "com.google.cloud.tools.jib" version "2.6.0"
 }
+
+apply plugin: 'base'
+apply plugin: "kotlin"
 
 group 'org.bravo'
 version '0.1'
@@ -51,3 +55,15 @@ dependencies {
             "org.slf4j:slf4j-api:1.7.30",
     )
 }
+
+jib {
+    to {
+        image = "btstn:dev"
+    }
+    container {
+        user = "1000"
+        creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+    allowInsecureRegistries = true
+}
+

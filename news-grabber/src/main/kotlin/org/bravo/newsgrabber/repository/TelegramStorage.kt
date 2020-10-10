@@ -7,12 +7,14 @@ import com.github.badoualy.telegram.mtproto.model.MTSession
 import org.apache.commons.io.FileUtils
 import java.io.File
 
-class TelegramStorage(
-    private val authKeyFile: File = File("news-grabber/src/main/resources/auth.key"),
-    private val nearestDcFile: File = File("news-grabber/src/main/resources/dc.save")
-) : TelegramApiStorage {
+@Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
+class TelegramStorage : TelegramApiStorage {
+
+    private val authKeyFile: File = File(this::class.java.classLoader.getResource("auth.key").path)
+    private val nearestDcFile: File = File(this::class.java.classLoader.getResource("dc.save").path)
 
     override fun deleteAuthKey() {
+
         runCatching {
             FileUtils.forceDelete(authKeyFile)
         }.getOrElse { error ->
