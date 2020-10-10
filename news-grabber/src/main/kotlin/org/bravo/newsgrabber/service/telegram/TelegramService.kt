@@ -12,8 +12,8 @@ import com.github.badoualy.telegram.tl.api.TLUser
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization
 import com.github.badoualy.telegram.tl.api.auth.TLSentCode
 import com.github.badoualy.telegram.tl.core.TLObject
-import org.bravo.newsgrabber.model.News
-import org.bravo.newsgrabber.model.NewsSource
+import org.bravo.newsgrabber.model.dto.News
+import org.bravo.newsgrabber.model.dto.NewsSource
 import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import org.bravo.newsgrabber.repository.TelegramStorage
 import org.slf4j.LoggerFactory

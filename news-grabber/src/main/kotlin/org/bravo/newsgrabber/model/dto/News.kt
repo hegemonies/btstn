@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model
+package org.bravo.newsgrabber.model.dto
 
 data class News(
     val message: String,

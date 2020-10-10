@@ -1,7 +1,7 @@
 package org.bravo.newsgrabber.model.mapper
 
-import org.bravo.newsgrabber.model.News
-import org.bravo.newsgrabber.model.NewsTable
+import org.bravo.newsgrabber.model.dto.News
+import org.bravo.newsgrabber.model.table.NewsTable
 import org.jetbrains.exposed.sql.ResultRow
 
 fun mapToNewsDto(resultRow: ResultRow) =

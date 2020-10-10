@@ -1,14 +1,14 @@
 package org.bravo.newsgrabber.service.grabber
 
 import kotlinx.coroutines.delay
-import org.bravo.newsgrabber.model.News
-import org.bravo.newsgrabber.model.NewsTable
-import org.bravo.newsgrabber.model.mapper.mapToNewsDto
+import org.bravo.newsgrabber.model.dto.News
+import org.bravo.newsgrabber.model.query.objectIdNotExists
+import org.bravo.newsgrabber.model.table.NewsTable
 import org.bravo.newsgrabber.service.telegram.TelegramService
 import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
+import kotlin.system.measureTimeMillis
 
 object TelegramGrabber : NewsGrabber {
 
@@ -16,28 +16,30 @@ object TelegramGrabber : NewsGrabber {
         saveToDb(grab())
 
     override suspend fun saveToDb(news: List<News>): Boolean {
-        transaction {
-            news.forEach { newsFromList ->
-                if (newsFromList.message.isNotEmpty()) {
-                    NewsTable.select { NewsTable.objectId eq newsFromList.objectId }
-                        .map { mapToNewsDto(it) }
-                        .firstOrNull()
-                        ?: NewsTable.insert {
+        measureTimeMillis {
+            transaction {
+                news.filter {
+                    it.message.isNotEmpty()
+                }.forEach { newsFromList ->
+                    if (objectIdNotExists(newsFromList.objectId)) {
+                        NewsTable.insert {
                             it[message] = newsFromList.message
                             it[newsSource] = newsFromList.source
                             it[objectId] = newsFromList.objectId
                             it[date] = newsFromList.date
                         }
+                    }
                 }
             }
-            commit()
+        }.also { elapsedTimes ->
+            logger.debug("Inserting news by $elapsedTimes millis")
         }
 
         return true
     }
 
     override suspend fun grab(): List<News> =
-        (1..50).map { chatNumber ->
+        (1..3).map { chatNumber ->
             logger.info("Read messages from chat #$chatNumber")
 
             TelegramService.readAllNewsFrom(chatNumber).also { news ->
