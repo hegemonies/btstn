@@ -20,19 +20,20 @@ object TelegramGrabber : NewsGrabber {
             transaction {
                 news.filter {
                     it.message.isNotEmpty()
+                }.filter {
+                    objectIdNotExists(it.objectId)
                 }.forEach { newsFromList ->
-                    if (objectIdNotExists(newsFromList.objectId)) {
-                        NewsTable.insert {
-                            it[message] = newsFromList.message
-                            it[newsSource] = newsFromList.source
-                            it[objectId] = newsFromList.objectId
-                            it[date] = newsFromList.date
-                        }
+                    logger.info("insert news #${newsFromList.objectId}")
+                    NewsTable.insert {
+                        it[message] = newsFromList.message
+                        it[newsSource] = newsFromList.source
+                        it[objectId] = newsFromList.objectId
+                        it[date] = newsFromList.date
                     }
                 }
             }
         }.also { elapsedTimes ->
-            logger.debug("Inserting news by $elapsedTimes millis")
+            logger.info("Inserting news by $elapsedTimes millis")
         }
 
         return true
