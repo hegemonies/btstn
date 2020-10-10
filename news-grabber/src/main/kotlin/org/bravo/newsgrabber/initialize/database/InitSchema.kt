@@ -4,11 +4,8 @@ import org.bravo.newsgrabber.model.NewsTable
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
-object InitSchema {
-
-    fun initSchemas() {
-        transaction {
-            SchemaUtils.createMissingTablesAndColumns(NewsTable)
-        }
+fun initSchemas() {
+    transaction {
+        SchemaUtils.createMissingTablesAndColumns(NewsTable)
     }
 }
