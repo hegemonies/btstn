@@ -104,18 +104,18 @@ object TelegramService {
 
             val news = mutableListOf<News>()
 
-            tlAbsMessages.messages.reversed().forEach {
-                val messageContent =
-                    when (it) {
-                        is TLMessage -> it.message
-                        else -> ""
-                    }
+            for (absMessage in tlAbsMessages.messages) {
+                val message = when (absMessage) {
+                    is TLMessage -> absMessage
+                    else -> continue
+                }
 
                 news.add(
                     News(
-                        message = messageContent,
+                        message = message.message,
                         source = NewsSource.Telegram,
-                        objectId = it.id.toLong()
+                        objectId = message.id.toLong(),
+                        date = message.date.toLong()
                     )
                 )
             }
@@ -123,7 +123,7 @@ object TelegramService {
             news
         }.getOrElse { error ->
             logger.error("Error read all news from telegram by chat with number #$chatNumber: ${error.message}")
-            emptyList<News>()
+            emptyList()
         }
 
     private val logger = LoggerFactory.getLogger(this::class.java)

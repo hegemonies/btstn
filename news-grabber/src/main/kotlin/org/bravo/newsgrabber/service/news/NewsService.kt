@@ -2,13 +2,12 @@ package org.bravo.newsgrabber.service.news
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.bravo.newsgrabber.service.grabber.TelegramGrabber
 import org.slf4j.LoggerFactory
-import org.slf4j.MarkerFactory
 import kotlin.system.measureTimeMillis
 
 object NewsService {
@@ -22,8 +21,8 @@ object NewsService {
 
                 val elapsedTime = measureTimeMillis {
                     grabbers.add(
-                        launch {
-                            TelegramGrabber().processed()
+                        async {
+                            TelegramGrabber.processed()
                         }
                     )
 

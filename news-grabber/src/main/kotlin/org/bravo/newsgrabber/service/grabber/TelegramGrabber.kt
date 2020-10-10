@@ -10,7 +10,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 
-class TelegramGrabber : NewsGrabber {
+object TelegramGrabber : NewsGrabber {
 
     override suspend fun processed(): Boolean =
         saveToDb(grab())
@@ -26,6 +26,7 @@ class TelegramGrabber : NewsGrabber {
                             it[message] = newsFromList.message
                             it[newsSource] = newsFromList.source
                             it[objectId] = newsFromList.objectId
+                            it[date] = newsFromList.date
                         }
                 }
             }
@@ -35,19 +36,17 @@ class TelegramGrabber : NewsGrabber {
         return true
     }
 
-    override suspend fun grab(): List<News> {
-        return (1..50).map { chatNumber ->
+    override suspend fun grab(): List<News> =
+        (1..50).map { chatNumber ->
             logger.info("Read messages from chat #$chatNumber")
+
             TelegramService.readAllNewsFrom(chatNumber).also { news ->
-                // logger.info("news from chat #$chatNumber: $news")
+                logger.debug("news from chat #$chatNumber: $news")
                 delay(4000)
             }
         }.reduce { acc, list ->
             acc + list
         }
-    }
 
-    companion object {
-        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
-    }
+    private val logger = LoggerFactory.getLogger(this::class.java)
 }

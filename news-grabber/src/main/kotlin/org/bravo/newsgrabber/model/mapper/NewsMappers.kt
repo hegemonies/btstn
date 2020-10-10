@@ -8,5 +8,6 @@ fun mapToNewsDto(resultRow: ResultRow) =
     News(
         message = resultRow[NewsTable.message],
         source = resultRow[NewsTable.newsSource],
-        objectId = resultRow[NewsTable.objectId]
+        objectId = resultRow[NewsTable.objectId],
+        date = resultRow[NewsTable.date]
     )
