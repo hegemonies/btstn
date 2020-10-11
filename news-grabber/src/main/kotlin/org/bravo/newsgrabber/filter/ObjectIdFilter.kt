@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model.query
+package org.bravo.newsgrabber.filter
 
 import org.bravo.newsgrabber.model.mapper.mapToNewsDto
 import org.bravo.newsgrabber.model.table.NewsTable

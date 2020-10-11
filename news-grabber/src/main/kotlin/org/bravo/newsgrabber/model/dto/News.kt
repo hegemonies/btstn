@@ -1,8 +1,11 @@
 package org.bravo.newsgrabber.model.dto
 
+/**
+ * @see NewsSource for source field
+ */
 data class News(
     val message: String,
-    val source: NewsSource,
+    val source: String,
     val objectId: Long,
     val date: Long
 )

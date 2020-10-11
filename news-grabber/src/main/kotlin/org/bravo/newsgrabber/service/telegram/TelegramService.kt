@@ -3,6 +3,7 @@ package org.bravo.newsgrabber.service.telegram
 import com.github.badoualy.telegram.api.Kotlogram
 import com.github.badoualy.telegram.api.TelegramApp
 import com.github.badoualy.telegram.api.utils.id
+import com.github.badoualy.telegram.api.utils.title
 import com.github.badoualy.telegram.api.utils.toInputPeer
 import com.github.badoualy.telegram.tl.api.TLAbsChat
 import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty
@@ -12,10 +13,17 @@ import com.github.badoualy.telegram.tl.api.TLUser
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization
 import com.github.badoualy.telegram.tl.api.auth.TLSentCode
 import com.github.badoualy.telegram.tl.core.TLObject
+import com.github.badoualy.telegram.tl.exception.RpcErrorException
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
+import org.bravo.newsgrabber.filter.telegram.isMessage
 import org.bravo.newsgrabber.model.dto.News
 import org.bravo.newsgrabber.model.dto.NewsSource
 import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import org.bravo.newsgrabber.repository.TelegramStorage
+import org.bravo.newsgrabber.service.util.getAllDialogs
+import org.bravo.newsgrabber.service.util.getAllMessages
+import org.bravo.newsgrabber.service.util.getLatestMessagesFromAllDialogs
 import org.slf4j.LoggerFactory
 
 object TelegramService {
@@ -68,61 +76,89 @@ object TelegramService {
 
     /**
      * Read all messages from chat with special number and create [News] from it.
-     * TODO: need will refactor
+     * TODO: need refactoring, because [readAllNewsFromNew] has the same code
      */
-    fun readAllNewsFrom(chatNumber: Int): List<News> =
-        runCatching {
-            val tlAbsDialogs = client.messagesGetDialogs(
-                false,
-                0,
-                0,
-                TLInputPeerEmpty(),
-                Int.MAX_VALUE
-            )
-
-            val tlAbsPeer = tlAbsDialogs.dialogs[chatNumber].peer
-            val tlPeerObj: TLObject =
-                if (tlAbsPeer is TLPeerUser) tlAbsDialogs.users.first { it.id == tlAbsPeer.id }
-                else tlAbsDialogs.chats.first { it.id == tlAbsPeer.id }
-
-            // Retrieve inputPeer to get message history
-            val inputPeer = when (tlPeerObj) {
-                is TLUser -> tlPeerObj.toInputPeer()
-                is TLAbsChat -> tlPeerObj.toInputPeer()
-                else -> null
-            } ?: TLInputPeerEmpty()
-
-            val tlAbsMessages = client.messagesGetHistory(
-                inputPeer,
-                0,
-                0,
-                0,
-                Int.MAX_VALUE,
-                0,
-                0
-            )
+    fun readLatestNewsFrom(chatNumber: Int): List<News> =
+        try {
+            val absDialogs = client.getAllDialogs()
 
             val news = mutableListOf<News>()
 
-            for (absMessage in tlAbsMessages.messages) {
-                val message = when (absMessage) {
-                    is TLMessage -> absMessage
-                    else -> continue
-                }
-
-                news.add(
-                    News(
-                        message = message.message,
-                        source = NewsSource.Telegram,
-                        objectId = message.id.toLong(),
-                        date = message.date.toLong()
+            absDialogs.chats.first {
+                it.id == absDialogs.dialogs[chatNumber].peer.id
+            }.also { chat ->
+                chat.toInputPeer().let { peer ->
+                    client.getLatestMessagesFromAllDialogs(peer)
+                }.filter { absMessage ->
+                    isMessage(absMessage)
+                }.map { absMessage ->
+                    absMessage as TLMessage
+                }.forEach { message ->
+                    news.add(
+                        News(
+                            message = message.message,
+                            source = NewsSource.telegramSource(chat.title ?: "empty"),
+                            objectId = message.id.toLong(),
+                            date = message.date.toLong()
+                        )
                     )
-                )
+                }
             }
 
             news
-        }.getOrElse { error ->
-            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${error.message}")
+        } catch (rpcError: RpcErrorException) {
+            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
+            runBlocking {
+                logger.info("delaying ${rpcError.tagInteger} sec")
+                delay(rpcError.tagInteger * 1000L)
+            }
+            emptyList()
+        } catch (commonError: Exception) {
+            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
+            emptyList()
+        }
+
+    /**
+     * Read latest messages from chat with special number and create [News] from it.
+     * TODO: need refactoring, because [readLatestNewsFrom] has the same code
+     */
+    fun readAllNewsFromNew(chatNumber: Int): List<News> =
+        try {
+            val absDialogs = client.getAllDialogs()
+
+            val news = mutableListOf<News>()
+
+            absDialogs.chats.first {
+                it.id == absDialogs.dialogs[chatNumber].peer.id
+            }.also { chat ->
+                chat.toInputPeer().let { peer ->
+                    client.getAllMessages(peer)
+                }.filter { absMessage ->
+                    isMessage(absMessage)
+                }.map { absMessage ->
+                    absMessage as TLMessage
+                }.forEach { message ->
+                    news.add(
+                        News(
+                            message = message.message,
+                            source = NewsSource.telegramSource(chat.title ?: "empty"),
+                            objectId = message.id.toLong(),
+                            date = message.date.toLong()
+                        )
+                    )
+                }
+            }
+
+            news
+        } catch (rpcError: RpcErrorException) {
+            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
+            runBlocking {
+                logger.info("delaying ${rpcError.tagInteger} sec")
+                delay(rpcError.tagInteger * 1000L)
+            }
+            emptyList()
+        } catch (commonError: Exception) {
+            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
             emptyList()
         }
 

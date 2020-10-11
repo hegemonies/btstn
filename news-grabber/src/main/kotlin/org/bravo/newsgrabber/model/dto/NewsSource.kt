@@ -1,6 +1,10 @@
 package org.bravo.newsgrabber.model.dto
 
-enum class NewsSource(prefix: String) {
-    NO(""),
-    Telegram("telegram:"),
+object NewsSource {
+    private const val telegramPrefix = "Telegram: "
+
+    fun telegramSource(postfix: String) =
+        telegramPrefix + postfix
+
+    fun noSource() = ""
 }

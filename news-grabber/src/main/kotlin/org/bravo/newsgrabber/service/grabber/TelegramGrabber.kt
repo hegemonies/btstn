@@ -1,16 +1,18 @@
 package org.bravo.newsgrabber.service.grabber
 
 import kotlinx.coroutines.delay
+import org.bravo.newsgrabber.filter.objectIdNotExists
 import org.bravo.newsgrabber.model.dto.News
-import org.bravo.newsgrabber.model.query.objectIdNotExists
 import org.bravo.newsgrabber.model.table.NewsTable
-import org.bravo.newsgrabber.service.telegram.TelegramService
+import org.bravo.newsgrabber.strategy.telegram.IFetchStrategy
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.slf4j.LoggerFactory
 import kotlin.system.measureTimeMillis
 
-object TelegramGrabber : NewsGrabber {
+class TelegramGrabber(
+    private val fetchStrategy: IFetchStrategy<Int, List<News>>
+) : NewsGrabber {
 
     override suspend fun processed(): Boolean =
         saveToDb(grab())
@@ -23,7 +25,8 @@ object TelegramGrabber : NewsGrabber {
                 }.filter {
                     objectIdNotExists(it.objectId)
                 }.forEach { newsFromList ->
-                    logger.info("insert news #${newsFromList.objectId}")
+                    logger.debug("insert news #${newsFromList.objectId}")
+
                     NewsTable.insert {
                         it[message] = newsFromList.message
                         it[newsSource] = newsFromList.source
@@ -40,16 +43,18 @@ object TelegramGrabber : NewsGrabber {
     }
 
     override suspend fun grab(): List<News> =
-        (1..3).map { chatNumber ->
+        (1..99).map { chatNumber ->
             logger.info("Read messages from chat #$chatNumber")
 
-            TelegramService.readAllNewsFrom(chatNumber).also { news ->
+            fetchStrategy.fetch(chatNumber).also { news ->
                 logger.debug("news from chat #$chatNumber: $news")
-                delay(4000)
+                delay(2000)
             }
         }.reduce { acc, list ->
             acc + list
         }
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
 }
