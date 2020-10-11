@@ -16,6 +16,8 @@ import com.github.badoualy.telegram.tl.core.TLObject
 import com.github.badoualy.telegram.tl.exception.RpcErrorException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.bravo.newsgrabber.filter.sourceFilter
+import org.bravo.newsgrabber.filter.tagFilter
 import org.bravo.newsgrabber.filter.telegram.isMessage
 import org.bravo.newsgrabber.model.dto.News
 import org.bravo.newsgrabber.model.dto.NewsSource
@@ -87,6 +89,11 @@ object TelegramService {
             absDialogs.chats.first {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
             }.also { chat ->
+                if (chat.title == null || sourceFilter(chat.title!!)) {
+                    logger.info("Chat - ${chat.title}, dont pass filter")
+                    return emptyList()
+                }
+
                 chat.toInputPeer().let { peer ->
                     client.getLatestMessagesFromAllDialogs(peer)
                 }.filter { absMessage ->
@@ -131,12 +138,19 @@ object TelegramService {
             absDialogs.chats.first {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
             }.also { chat ->
+                if (chat.title == null || sourceFilter(chat.title!!)) {
+                    logger.info("Chat - ${chat.title}, dont pass filter")
+                    return emptyList()
+                }
+
                 chat.toInputPeer().let { peer ->
                     client.getAllMessages(peer)
                 }.filter { absMessage ->
                     isMessage(absMessage)
                 }.map { absMessage ->
                     absMessage as TLMessage
+                }.filter{ message ->
+                    tagFilter(message = message.message)
                 }.forEach { message ->
                     news.add(
                         News(
