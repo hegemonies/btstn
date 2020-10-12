@@ -3,3 +3,5 @@ news-grabber/.gradle/
 news-grabber/.idea/
 news-grabber/src/main/resources/auth.key
 news-grabber/src/main/resources/dc.save
+
+.idea
