@@ -89,7 +89,7 @@ object TelegramService {
             absDialogs.chats.first {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
             }.also { chat ->
-                if (chat.title == null || sourceFilter(chat.title!!)) {
+                if (chat.title == null || !sourceFilter(chat.title!!)) {
                     logger.info("Chat - ${chat.title}, dont pass filter")
                     return emptyList()
                 }
@@ -138,7 +138,7 @@ object TelegramService {
             absDialogs.chats.first {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
             }.also { chat ->
-                if (chat.title == null || sourceFilter(chat.title!!)) {
+                if (chat.title == null || !sourceFilter(chat.title!!)) {
                     logger.info("Chat - ${chat.title}, dont pass filter")
                     return emptyList()
                 }
