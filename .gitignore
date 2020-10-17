@@ -1,14 +1,15 @@
-news-grabber/build/
-news-grabber/.gradle/
-news-grabber/.idea/
-news-grabber/src/main/resources/auth.key
-news-grabber/src/main/resources/dc.save
+kotlin/news-grabber/build/
+kotlin/news-grabber/.gradle/
+kotlin/news-grabber/.idea/
+kotlin/news-grabber/src/main/resources/auth.key
+kotlin/news-grabber/src/main/resources/dc.save
 
 .idea/
 
-kotlin-dto/kotlin-dto.iml
-kotlin-dto/build/
-kotlin-dto/.gradle/
-kotlin-dto/.idea/
+kotlin/kotlin-dto/kotlin-dto.iml
+kotlin/kotlin-dto/build/
+kotlin/kotlin-dto/.gradle/
+kotlin/kotlin-dto/.idea/
 
-build/
+kotlin/build/
+kotlin/.gradle/
