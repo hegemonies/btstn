@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model.dto
+package org.bravo.model.dto
 
 /**
  * @see NewsSource for source field
@@ -9,4 +9,3 @@ data class News(
     val objectId: Long,
     val date: Long
 )
-

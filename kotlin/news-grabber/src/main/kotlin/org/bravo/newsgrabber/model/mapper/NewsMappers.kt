@@ -1,6 +1,6 @@
 package org.bravo.newsgrabber.model.mapper
 
-import org.bravo.newsgrabber.model.dto.News
+import org.bravo.model.dto.News
 import org.bravo.newsgrabber.model.table.NewsTable
 import org.jetbrains.exposed.sql.ResultRow
 

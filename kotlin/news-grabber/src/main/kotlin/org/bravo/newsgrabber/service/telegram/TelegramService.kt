@@ -5,22 +5,17 @@ import com.github.badoualy.telegram.api.TelegramApp
 import com.github.badoualy.telegram.api.utils.id
 import com.github.badoualy.telegram.api.utils.title
 import com.github.badoualy.telegram.api.utils.toInputPeer
-import com.github.badoualy.telegram.tl.api.TLAbsChat
-import com.github.badoualy.telegram.tl.api.TLInputPeerEmpty
 import com.github.badoualy.telegram.tl.api.TLMessage
-import com.github.badoualy.telegram.tl.api.TLPeerUser
-import com.github.badoualy.telegram.tl.api.TLUser
 import com.github.badoualy.telegram.tl.api.auth.TLAuthorization
 import com.github.badoualy.telegram.tl.api.auth.TLSentCode
-import com.github.badoualy.telegram.tl.core.TLObject
 import com.github.badoualy.telegram.tl.exception.RpcErrorException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.bravo.model.dto.News
+import org.bravo.model.dto.NewsSource
 import org.bravo.newsgrabber.filter.sourceFilter
 import org.bravo.newsgrabber.filter.tagFilter
 import org.bravo.newsgrabber.filter.telegram.isMessage
-import org.bravo.newsgrabber.model.dto.News
-import org.bravo.newsgrabber.model.dto.NewsSource
 import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import org.bravo.newsgrabber.repository.TelegramStorage
 import org.bravo.newsgrabber.service.util.getAllDialogs
@@ -94,6 +89,8 @@ object TelegramService {
                     return emptyList()
                 }
 
+                logger.info("Chat - ${chat.title}, passed the filter")
+
                 chat.toInputPeer().let { peer ->
                     client.getLatestMessagesFromAllDialogs(peer)
                 }.filter { absMessage ->
@@ -142,6 +139,8 @@ object TelegramService {
                     logger.info("Chat - ${chat.title}, dont pass filter")
                     return emptyList()
                 }
+
+                logger.info("Chat - ${chat.title}, passed the filter")
 
                 chat.toInputPeer().let { peer ->
                     client.getAllMessages(peer)

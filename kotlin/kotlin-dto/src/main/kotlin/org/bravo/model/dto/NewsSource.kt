@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model.dto
+package org.bravo.model.dto
 
 object NewsSource {
     private const val telegramPrefix = "Telegram: "

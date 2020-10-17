@@ -1,6 +1,6 @@
 package org.bravo.newsgrabber.model.table
 
-import org.bravo.newsgrabber.model.dto.NewsSource
+import org.bravo.model.dto.NewsSource
 import org.jetbrains.exposed.sql.Table
 
 object NewsTable : Table("news_grabber_news") {

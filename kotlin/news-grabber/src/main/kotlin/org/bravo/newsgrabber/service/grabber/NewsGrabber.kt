@@ -1,6 +1,6 @@
 package org.bravo.newsgrabber.service.grabber
 
-import org.bravo.newsgrabber.model.dto.News
+import org.bravo.model.dto.News
 
 interface NewsGrabber {
     suspend fun processed(): Boolean

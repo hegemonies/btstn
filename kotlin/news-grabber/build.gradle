@@ -10,18 +10,6 @@ plugins {
     id "com.google.cloud.tools.jib" version "2.6.0"
 }
 
-apply plugin: 'base'
-apply plugin: "kotlin"
-
-group 'org.bravo'
-version '0.1'
-
-repositories {
-    mavenCentral()
-    jcenter()
-    maven { url 'https://jitpack.io' }
-}
-
 dependencies {
 
     // telegram client api
@@ -53,6 +41,7 @@ dependencies {
             "ch.qos.logback:logback-classic:1.2.3",
             "ch.qos.logback:logback-core:1.2.3",
             "org.slf4j:slf4j-api:1.7.30",
+            project(":kotlin-dto"),
     )
 }
 

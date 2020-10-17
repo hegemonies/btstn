@@ -1,8 +1,8 @@
 package org.bravo.newsgrabber.service.grabber
 
 import kotlinx.coroutines.delay
+import org.bravo.model.dto.News
 import org.bravo.newsgrabber.filter.objectIdNotExists
-import org.bravo.newsgrabber.model.dto.News
 import org.bravo.newsgrabber.model.table.NewsTable
 import org.bravo.newsgrabber.strategy.telegram.IFetchStrategy
 import org.jetbrains.exposed.sql.insert

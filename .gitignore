@@ -5,3 +5,10 @@ news-grabber/src/main/resources/auth.key
 news-grabber/src/main/resources/dc.save
 
 .idea/
+
+kotlin-dto/kotlin-dto.iml
+kotlin-dto/build/
+kotlin-dto/.gradle/
+kotlin-dto/.idea/
+
+build/
