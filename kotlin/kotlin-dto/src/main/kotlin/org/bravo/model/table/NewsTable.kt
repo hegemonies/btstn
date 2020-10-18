@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model.table
+package org.bravo.model.table
 
 import org.bravo.model.dto.NewsSource
 import org.jetbrains.exposed.sql.Table

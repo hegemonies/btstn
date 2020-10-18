@@ -1,21 +1,35 @@
-package org.bravo
+package org.bravo.apiproxy
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
-import io.ktor.response.*
-import io.ktor.request.*
 import io.ktor.features.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.util.date.*
-import io.ktor.routing.*
-import com.fasterxml.jackson.databind.*
 import io.ktor.jackson.*
+import io.ktor.response.*
+import io.ktor.routing.*
+import io.ktor.util.date.*
+import org.bravo.apiproxy.initialize.database.connectToDatabase
+import org.bravo.apiproxy.route.news
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>) {
+    connectToDatabase()
+    io.ktor.server.netty.EngineMain.main(args)
+}
 
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
+    // You can see metrics used MBeans plugin in JVisualVM
+    // install(DropwizardMetrics) {
+    //     val reporter = Slf4jReporter.forRegistry(registry)
+    //         .outputTo(log)
+    //         .convertRatesTo(TimeUnit.SECONDS)
+    //         .convertDurationsTo(TimeUnit.MILLISECONDS)
+    //         .build();
+    //     reporter.start(10, TimeUnit.SECONDS);
+    // }
 
     install(Compression) {
         gzip {
@@ -44,7 +58,10 @@ fun Application.module(testing: Boolean = false) {
     install(CachingHeaders) {
         options { outgoingContent ->
             when (outgoingContent.contentType?.withoutParameters()) {
-                ContentType.Text.CSS -> CachingOptions(CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60), expires = null as? GMTDate?)
+                ContentType.Text.CSS -> CachingOptions(
+                    CacheControl.MaxAge(maxAgeSeconds = 24 * 60 * 60),
+                    expires = null as? GMTDate?
+                )
                 else -> null
             }
         }
@@ -77,9 +94,7 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
-        get("/") {
-            call.respondText("HELLO WORLD!", contentType = ContentType.Text.Plain)
-        }
+        news()
 
         install(StatusPages) {
             exception<AuthenticationException> { cause ->
@@ -89,10 +104,6 @@ fun Application.module(testing: Boolean = false) {
                 call.respond(HttpStatusCode.Forbidden)
             }
 
-        }
-
-        get("/json/jackson") {
-            call.respond(mapOf("hello" to "world"))
         }
     }
 }

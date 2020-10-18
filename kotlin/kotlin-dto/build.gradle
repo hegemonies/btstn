@@ -10,3 +10,10 @@ plugins {
 }
 
 apply plugin: "kotlin"
+
+dependencies {
+    implementation(
+            // database library
+            "org.jetbrains.exposed:exposed-core:0.24.1",
+    )
+}

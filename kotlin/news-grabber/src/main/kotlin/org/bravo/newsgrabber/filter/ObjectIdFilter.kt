@@ -1,7 +1,7 @@
 package org.bravo.newsgrabber.filter
 
-import org.bravo.newsgrabber.model.mapper.mapToNewsDto
-import org.bravo.newsgrabber.model.table.NewsTable
+import org.bravo.model.mapper.mapToNewsDto
+import org.bravo.model.table.NewsTable
 import org.jetbrains.exposed.sql.select
 
 fun objectIdExists(objectId: Long) =

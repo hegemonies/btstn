@@ -8,7 +8,7 @@
 
     <logger name="io.netty" level="ERROR"/>
 
-    <root level="TRACE">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
