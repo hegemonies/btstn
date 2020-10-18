@@ -2,13 +2,13 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{dd.MM.yy HH:mm:ss.SSS} %highlight(%-5.5level) [%-20.20thread] %-30.30file.%-4.4line : %msg%n</pattern>
+            <pattern>%d{dd.MM.YYYY HH:mm:ss.SSS} %highlight(%-5.5level) [%-20.20thread] %-30.30file.%-4.4line : %msg%n</pattern>
         </encoder>
     </appender>
 
     <logger name="com.github.badoualy" level="ERROR" />
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>

@@ -47,7 +47,7 @@ dependencies {
 
 jib {
     to {
-        image = "btstn:dev"
+        image = "btstn/news-grabber:dev"
     }
     container {
         user = "1000"
@@ -55,4 +55,3 @@ jib {
     }
     allowInsecureRegistries = true
 }
-
