@@ -2,13 +2,15 @@ rootProject.name = 'btstn'
 
 def projects = [
         'news-grabber',
-        'kotlin-dto'
+        'api-proxy',
+        'kotlin-dto',
 ]
 
 projects.each { name ->
     include name
 
     def project = project(":${name}")
+
     project.buildFileName = "build.gradle"
     if (!project.buildFile.exists()) {
         throw new RuntimeException("Build file in module $name does not exist!")
