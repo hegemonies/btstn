@@ -8,18 +8,30 @@ import io.ktor.http.content.*
 import io.ktor.jackson.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import io.ktor.util.*
 import io.ktor.util.date.*
-import org.bravo.apiproxy.initialize.database.connectToDatabase
+import org.bravo.apiproxy.property.databaseHost
+import org.bravo.apiproxy.property.databasePassword
+import org.bravo.apiproxy.property.databasePort
+import org.bravo.apiproxy.property.databaseUsername
 import org.bravo.apiproxy.route.news
+import org.jetbrains.exposed.sql.Database
 
 fun main(args: Array<String>) {
-    connectToDatabase()
     io.ktor.server.netty.EngineMain.main(args)
 }
 
+@KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {
+
+    Database.connect(
+        url = "jdbc:postgresql://$databaseHost:$databasePort/bravo_news",
+        driver = "org.postgresql.Driver",
+        user = databaseUsername,
+        password = databasePassword
+    )
 
     // You can see metrics used MBeans plugin in JVisualVM
     // install(DropwizardMetrics) {
