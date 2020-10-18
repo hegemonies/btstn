@@ -16,9 +16,15 @@ import org.bravo.apiproxy.property.databasePort
 import org.bravo.apiproxy.property.databaseUsername
 import org.bravo.apiproxy.route.news
 import org.jetbrains.exposed.sql.Database
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
-    io.ktor.server.netty.EngineMain.main(args)
+    runCatching {
+        io.ktor.server.netty.EngineMain.main(args)
+    }.getOrElse { error ->
+        println("Error: ${error.message}")
+        exitProcess(1)
+    }
 }
 
 @KtorExperimentalAPI
@@ -109,10 +115,10 @@ fun Application.module(testing: Boolean = false) {
         news()
 
         install(StatusPages) {
-            exception<AuthenticationException> { cause ->
+            exception<AuthenticationException> { _ ->
                 call.respond(HttpStatusCode.Unauthorized)
             }
-            exception<AuthorizationException> { cause ->
+            exception<AuthorizationException> { _ ->
                 call.respond(HttpStatusCode.Forbidden)
             }
 

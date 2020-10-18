@@ -7,6 +7,7 @@ import org.bravo.newsgrabber.property.app.AppProperties
 import org.bravo.newsgrabber.property.database.DatabaseProperties
 import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import org.bravo.newsgrabber.service.news.NewsService
+import kotlin.system.exitProcess
 
 fun main() {
     runCatching {
@@ -19,6 +20,7 @@ fun main() {
         }
     }.getOrElse { error ->
         println("Error: ${error.message}")
+        exitProcess(1)
     }
 }
 
