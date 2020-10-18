@@ -28,7 +28,7 @@ fun Route.news() {
 
         newSuspendedTransaction(Dispatchers.Default) {
             suspendedTransaction {
-                NewsTable.select { NewsTable.message like "#${searchNews.tag}%" }.map {
+                NewsTable.select { NewsTable.message like "%#${searchNews.tag}%" }.map {
                     mapToNewsDto(it)
                 }.map { dto ->
                     SearchNewsResponseView.fromNewsDto(dto)
