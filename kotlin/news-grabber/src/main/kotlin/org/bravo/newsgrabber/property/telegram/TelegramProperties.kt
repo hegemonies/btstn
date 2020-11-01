@@ -13,11 +13,15 @@ data class TelegramProperties(
     val languageCode: String = "en",
     val apiId: Int = applicationPropertiesConfiguration[telegram.apiId],
     val apiHash: String = applicationPropertiesConfiguration[telegram.apiHash],
-    val phoneNumber: String = applicationPropertiesConfiguration[telegram.phoneNumber]
+    val phoneNumber: String = applicationPropertiesConfiguration[telegram.phoneNumber],
+    val authKeyPath: String? = applicationPropertiesConfiguration.getOrNull(telegram.authKeyPath),
+    val dataCenterPath: String? = applicationPropertiesConfiguration.getOrNull(telegram.dataCenterPath)
 )
 
 private object telegram : PropertyGroup() {
     val apiId by intType
     val apiHash by stringType
     val phoneNumber by stringType // syntax like "+79991237654"
+    val authKeyPath by stringType
+    val dataCenterPath by stringType
 }
