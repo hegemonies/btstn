@@ -8,6 +8,7 @@ COPY public/ ./public/
 COPY src/ ./src/
 COPY docker/*.conf ./nginx-configs/
 
+RUN npm i
 RUN npm run build
 
 FROM bunkerity/bunkerized-nginx:1.1.1
