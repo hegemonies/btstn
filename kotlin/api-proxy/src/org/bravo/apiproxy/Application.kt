@@ -63,15 +63,11 @@ fun Application.module(testing: Boolean = false) {
 
     install(CORS) {
         method(HttpMethod.Options)
-        method(HttpMethod.Put)
-        method(HttpMethod.Delete)
-        method(HttpMethod.Patch)
-        header(HttpHeaders.Authorization)
-        header("MyCustomHeader")
+        method(HttpMethod.Post)
+        header(HttpHeaders.ContentType)
         allowCredentials = true
-        anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+        anyHost()
     }
-
 
     install(CachingHeaders) {
         options { outgoingContent ->

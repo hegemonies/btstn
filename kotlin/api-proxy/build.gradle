@@ -9,6 +9,7 @@ buildscript {
 plugins {
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
     id "com.google.cloud.tools.jib" version "2.6.0"
+    id "com.github.johnrengelman.shadow" version "6.1.0"
 }
 
 apply plugin: 'kotlin'
@@ -63,4 +64,8 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
     allowInsecureRegistries = true
+}
+
+shadowJar {
+    archiveFileName = "api-proxy.jar"
 }

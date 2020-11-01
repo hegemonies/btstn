@@ -5,13 +5,23 @@ import com.github.badoualy.telegram.mtproto.auth.AuthKey
 import com.github.badoualy.telegram.mtproto.model.DataCenter
 import com.github.badoualy.telegram.mtproto.model.MTSession
 import org.apache.commons.io.FileUtils
+import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import java.io.File
 
 @Suppress("RECEIVER_NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
 class TelegramStorage : TelegramApiStorage {
 
-    private val authKeyFile: File = File(this::class.java.classLoader.getResource("auth.key").path)
-    private val nearestDcFile: File = File(this::class.java.classLoader.getResource("dc.save").path)
+    private val telegramProperties = TelegramProperties()
+    private val authKeyFile: File =
+        File(
+            telegramProperties.authKeyPath ?: this::class.java.classLoader.getResource("auth.key").path
+            ?: throw RuntimeException("authKeyPath property must be set")
+        )
+    private val nearestDcFile: File =
+        File(
+            telegramProperties.dataCenterPath ?: this::class.java.classLoader.getResource("dc.save").path
+            ?: throw RuntimeException("dataCenterPath property must be set")
+        )
 
     override fun deleteAuthKey() {
 

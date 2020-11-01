@@ -9,7 +9,7 @@ import org.bravo.newsgrabber.property.telegram.TelegramProperties
 import org.bravo.newsgrabber.service.news.NewsService
 import kotlin.system.exitProcess
 
-fun main() {
+fun main(args: Array<String>) {
     runCatching {
         printAllProperties()
         connectToDatabase()
