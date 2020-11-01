@@ -37,7 +37,21 @@ services:
       - TELEGRAM_APIID=
       - TELEGRAM_APIHASH=
       - TELEGRAM_PHONENUMBER=1234
-      - APP_SOURCES=ON FLEEK investing;Сам ты инвестор!;Тинькофф Инвестиции;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;InvestFuture;RDV PREMIUM;ДОХОДЪ;ВТБ Мои Инвестиции;Довольный капитал / DCP Investment
+      - APP_SOURCES=ON FLEEK investing;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;MarketTwits
+      - APP_STRATEGY=ALL
+    networks:
+      - bravonet
+
+  frontend:
+    image: btstn/frontend:dev
+    restart: always
+    depends_on:
+      - api-proxy
+    ports:
+      - 80:8080
+    environment:
+      - USE_ANTIBOT=cookie
+      - REACT_APP_ENV=prod
     networks:
       - bravonet
 
