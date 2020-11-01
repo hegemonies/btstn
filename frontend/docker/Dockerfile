@@ -6,7 +6,6 @@ COPY package.json .
 COPY package-lock.json .
 COPY public/ ./public/
 COPY src/ ./src/
-COPY node_modules/ ./node_modules/
 COPY docker/*.conf ./nginx-configs/
 
 RUN npm run build
