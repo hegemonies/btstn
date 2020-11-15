@@ -60,7 +60,7 @@ jib {
 jar {
     manifest {
         attributes(
-                'Main-Class': 'org.bravo.newsgrabber.MainKt'
+                'Main-Class': 'org.bravo.newsgrabber.NewsGrabberKt'
         )
     }
 }

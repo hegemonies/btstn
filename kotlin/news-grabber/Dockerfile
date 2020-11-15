@@ -4,4 +4,4 @@ ADD build/libs/news-grabber.jar /app/
 ADD src/main/resources/auth.key /app/news-grabber/
 ADD src/main/resources/dc.save /app/news-grabber/
 
-CMD java -jar /app/news-grabber.jar
+CMD java -Xmx256M -jar /app/news-grabber.jar

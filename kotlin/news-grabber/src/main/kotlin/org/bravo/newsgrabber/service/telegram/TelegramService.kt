@@ -169,7 +169,7 @@ object TelegramService {
                 logger.info("delaying ${rpcError.tagInteger} sec")
                 delay(rpcError.tagInteger * 1000L)
             }
-            emptyList()
+            readAllNewsFromNew(chatNumber)
         } catch (commonError: Exception) {
             logger.error("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
             emptyList()
