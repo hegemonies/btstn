@@ -12,6 +12,7 @@ import org.bravo.newsgrabber.service.grabber.TelegramGrabberConsumer
 import org.bravo.newsgrabber.strategy.telegram.TelegramFetchAllStrategy
 import org.bravo.newsgrabber.strategy.telegram.TelegramFetchLatestStrategy
 import org.slf4j.LoggerFactory
+import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
 object NewsService {
@@ -25,7 +26,12 @@ object NewsService {
         grabberServices.add(
             GlobalScope.launch {
                 TelegramGrabberConsumer.start()
-                runTelegramGrabber()
+                runCatching {
+                    runTelegramGrabber()
+                }.getOrElse { error ->
+                    logger.error("Error while telegram grabbing: ${error.message}")
+                    exitProcess(1)
+                }
             }
         )
 
