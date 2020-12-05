@@ -73,7 +73,7 @@ class SearchNews extends React.Component {
     render() {
         return (
             <Container>
-                <h2>Bravo news</h2>
+                <h1>Bravo News</h1>
 
                 <form onSubmit={this.handleOnSubmit}>
                     <TextField
