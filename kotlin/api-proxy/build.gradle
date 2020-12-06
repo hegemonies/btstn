@@ -3,7 +3,7 @@ buildscript {
         ktorVersion="1.4.1"
         kotlinVersion="1.4.10"
         logbackVersion="1.2.1"
-        exposedVersion = "0.28.1"
+        exposedVersion = "0.24.1"
     }
 }
 
@@ -43,12 +43,12 @@ dependencies {
             // JSON library
             "io.ktor:ktor-jackson:$ktorVersion",
 
-            // database library
+            // Database library
             "org.jetbrains.exposed:exposed-core:$exposedVersion",
             "org.jetbrains.exposed:exposed-dao:$exposedVersion",
             "org.jetbrains.exposed:exposed-jdbc:$exposedVersion",
 
-            // postgresql driver
+            // Postgresql driver
             "org.postgresql:postgresql:42.2.16",
 
             // DTO

@@ -1,6 +1,7 @@
 package org.bravo.apiproxy.model
 
-import org.bravo.model.dto.News
+import org.bravo.model.table.NewsTable
+import org.jetbrains.exposed.sql.ResultRow
 
 data class SearchNewsRequest(
     val tag: String
@@ -16,11 +17,11 @@ data class SearchNewsResponseView(
     val date: Long
 ) {
     companion object {
-        fun fromNewsDto(dto: News) =
+        fun fromResultRow(resultRow: ResultRow) =
             SearchNewsResponseView(
-                message = dto.message,
-                source = dto.source,
-                date = dto.date
+                message = resultRow[NewsTable.message],
+                source = resultRow[NewsTable.newsSource],
+                date = resultRow[NewsTable.date]
             )
     }
 }
