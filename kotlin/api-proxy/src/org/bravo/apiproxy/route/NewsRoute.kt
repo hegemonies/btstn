@@ -12,6 +12,7 @@ import org.bravo.apiproxy.model.SearchNewsResponseView
 import org.bravo.model.mapper.mapToNewsDto
 import org.bravo.model.table.NewsTable
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.experimental.suspendedTransaction
 import org.slf4j.LoggerFactory

@@ -15,5 +15,8 @@ dependencies {
     implementation(
             // database library
             "org.jetbrains.exposed:exposed-core:0.24.1",
+
+            // kotlin
+            "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",
     )
 }
