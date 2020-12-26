@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: news-grabber
+spec:
+  containers:
+  - name: news-grabber
+    image: pi3-1:5000/news-grabber:dev
+  imagePullSecrets:
+  - name: rsecret
