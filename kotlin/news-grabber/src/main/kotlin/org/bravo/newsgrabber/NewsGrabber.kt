@@ -1,6 +1,5 @@
 package org.bravo.newsgrabber
 
-import kotlinx.coroutines.runBlocking
 import org.bravo.newsgrabber.initialize.database.connectToDatabase
 import org.bravo.newsgrabber.initialize.database.initSchemas
 import org.bravo.newsgrabber.property.app.AppProperties
@@ -17,7 +16,7 @@ suspend fun main(args: Array<String>) {
         // TelegramClientAuthenticate.auth() TODO: need refactoring
         NewsService.runService()
     }.getOrElse { error ->
-        println("Error: ${error.message}")
+        println("Error: $error")
         exitProcess(1)
     }
 }
