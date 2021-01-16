@@ -5,26 +5,37 @@ services:
   db:
     image: postgres:latest
     restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -Ubravo -d bravo_news" ]
+      interval: 10s
+      timeout: 5s
+      retries: 100
     ports:
       - 5432:5432
     environment:
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_USER=bravo
+      - POSTGRES_PASSWORD=bravo
       - POSTGRES_DB=bravo_news
     mem_limit: 128m
     networks:
       - bravonet
+    volumes:
+      - ./postgres/postgresql.conf:/etc/postgresql/postgresql.conf
+    command: "postgres -c config_file=/etc/postgresql/postgresql.conf"
 
   api-proxy:
     image: btstn/api-proxy:dev
     restart: always
     depends_on:
-      - news-grabber
-      - db
+      news-grabber:
+        condition: service_started
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=db
       - DATABASE_PORT=5432
-      - DATABASE_USERNAME=postgres
-      - DATABASE_PASSWORD=postgres
+      - DATABASE_USERNAME=bravo
+      - DATABASE_PASSWORD=bravo
     ports:
       - 8081:8080
     mem_limit: 128m
@@ -35,9 +46,12 @@ services:
     image: btstn/news-grabber:dev
     restart: always
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       - DATABASE_HOST=db
+      - DATABASE_USERNAME=bravo
+      - DATABASE_PASSWORD=bravo
       - TELEGRAM_APIID=
       - TELEGRAM_APIHASH=
       - TELEGRAM_PHONENUMBER=1234
