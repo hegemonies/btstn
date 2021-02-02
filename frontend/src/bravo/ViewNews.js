@@ -1,5 +1,5 @@
 import React from "react";
-import {List, ListItem, ListItemText, Typography} from "@material-ui/core";
+import {Grid, List, ListItem, ListItemText, Typography} from "@material-ui/core";
 
 const listStyle = {
     paddingLeft: 0,
@@ -35,31 +35,28 @@ class ViewNews extends React.Component {
         )
     }
 
-    // Row = ({index}) => (
-    //     <div>
-    //         {
-    //             this.renderRow(
-    //                 this.props.news[index].id,
-    //                 this.props.news[index].message,
-    //                 this.props.news[index].date,
-    //                 this.props.news[index].source
-    //             )
-    //         }
-    //     </div>
-    // );
-
     render() {
+        if (this.props.news.length === 0) {
+            return (
+                <div style={{margin: 20}}>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                    >
+                        No news
+                    </Grid>
+                </div>
+            )
+        }
+
         return (
             <div>
                 <List
                     className="FixedSizeList"
                     style={listStyle}
-                    itemCount={this.props.news.length}
-                    // itemSize={40}
-                    // height={500}
-                    // width={1000}
                 >
-                    {/*{this.Row}*/}
                     {this.props.news.map(item => (
                         this.renderRow(item.id, item.message, item.date, item.source)
                     ))}
