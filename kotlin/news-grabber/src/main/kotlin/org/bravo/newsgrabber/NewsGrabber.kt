@@ -9,11 +9,17 @@ import org.bravo.newsgrabber.service.news.NewsService
 import kotlin.system.exitProcess
 
 suspend fun main(args: Array<String>) {
+    // runCatching {
+    //     TelegramClientAuthenticate.auth()
+    // }.getOrElse { error ->
+    //     println("Auth error: ${error.message}")
+    //     exitProcess(1)
+    // }
+
     runCatching {
         printAllProperties()
         connectToDatabase()
         initSchemas()
-        // TelegramClientAuthenticate.auth() TODO: need refactoring
         NewsService.runService()
     }.getOrElse { error ->
         println("Error: $error")
