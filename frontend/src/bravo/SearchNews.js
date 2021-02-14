@@ -51,8 +51,8 @@ class SearchNews extends React.Component {
             body: JSON.stringify({
                 tag: this.state.tag,
                 pagination: {
-                    offset: this.state.offset,
-                    limit: this.state.limit
+                    offset: this.defaultState().offset,
+                    limit: this.defaultState().limit
                 }
             }),
             keepalive: true,
