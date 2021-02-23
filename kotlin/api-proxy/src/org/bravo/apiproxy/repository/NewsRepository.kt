@@ -1,10 +1,18 @@
 package org.bravo.apiproxy.repository
 
 import arrow.core.Either
+import arrow.core.Validated
+import arrow.core.handleError
 import kotlinx.coroutines.newFixedThreadPoolContext
+import org.bravo.apiproxy.const.DEFAULT_UNKNOWN_ERROR_MESSAGE
+import org.bravo.apiproxy.model.CodeException
 import org.bravo.apiproxy.model.Pagination
+import org.bravo.apiproxy.model.ResponseError
 import org.bravo.model.dto.News
+import org.bravo.model.dto.Tag
 import org.bravo.model.table.NewsTable
+import org.bravo.model.table.NewsTagsTable
+import org.bravo.model.table.TagsTable
 import org.jetbrains.exposed.sql.SortOrder
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -15,48 +23,89 @@ object NewsRepository {
         newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors(), "news-repository-dispatcher")
 
     /**
-     * Find all news by tag.
-     */
-    suspend fun findByTag(tag: String): Either<Throwable, Pair<List<News>, Long>> =
-        Either.catch {
-            val (news, total) = newSuspendedTransaction(newsRepositoryDispatcher) {
-                val query = selectNews(tag)
-
-                val total = query.count()
-
-                val news = query
-                    .map { row ->
-                        News.fromResultRow(row)
-                    }
-
-                news to total
-            }
-
-            news to total
-        }
-
-    /**
      * Find news by tag and pagination.
      */
-    suspend fun findByTag(tag: String, pagination: Pagination): Either<Throwable, Pair<List<News>, Long>> =
-        Either.catch {
-            val (news, total) = newSuspendedTransaction(newsRepositoryDispatcher) {
-                val query = selectNews(tag)
+    suspend fun findByTag(tagName: String, pagination: Pagination): Either<ResponseError, Pair<List<News>, Long>> {
+        return newSuspendedTransaction(newsRepositoryDispatcher) {
+            val errorMessage = "Can not find news by tag"
 
-                val total = query.count()
-
-                val news = query.limit(n = pagination.limit, offset = pagination.offset)
-                    .map { row ->
-                        News.fromResultRow(row)
-                    }
-
-                news to total
+            getTagModel(tagName).handleError { error ->
+                return@newSuspendedTransaction Either.left(ResponseError.fromCodeException(errorMessage, error))
             }
 
-            news to total
+            val selectNewsQuery = runCatching {
+                findNewsByTagQuery(tagName)
+            }.getOrElse { error ->
+                return@newSuspendedTransaction Either.left(
+                    ResponseError(
+                        message = errorMessage,
+                        cause = error.message,
+                        code = ResponseError.Code.DATABASE_ERROR
+                    )
+                )
+            }
+
+            val total = selectNewsQuery.count()
+
+            val news = selectNewsQuery.limit(n = pagination.limit, offset = pagination.offset)
+                .map { row ->
+                    News.fromResultRow(row)
+                }
+
+            Either.right(
+                news to total
+            )
+        }
+    }
+
+    private fun selectNewsQuery(tag: String) =
+        NewsTable.select { NewsTable.message like "%#${tag}%" }
+            .orderBy(NewsTable.date, SortOrder.DESC)
+
+    private fun findNewsByTagQuery(tagName: String) =
+        NewsTable.innerJoin(NewsTagsTable)
+            .innerJoin(TagsTable)
+            .slice(NewsTable.columns)
+            .select {
+                TagsTable.tag eq tagName.toLowerCase()
+            }
+
+    private fun selectTag(tag: String) =
+        TagsTable.select { TagsTable.tag eq tag.toLowerCase() }
+            .map { row ->
+                Tag.fromResultRow(row)
+            }
+
+    private fun getTagModel(tag: String): Validated<CodeException, Tag> {
+        val tags = runCatching {
+            selectTag(tag)
+        }.getOrElse { error ->
+            return Validated.Invalid(
+                CodeException(
+                    message = error.message ?: DEFAULT_UNKNOWN_ERROR_MESSAGE,
+                    code = ResponseError.Code.DATABASE_ERROR
+                )
+            )
         }
 
-    private fun selectNews(tag: String) =
-        NewsTable.select { NewsTable.message like "%#$tag%" }
-            .orderBy(NewsTable.date, SortOrder.DESC)
+        if (tags.isEmpty()) {
+            return Validated.Invalid(
+                CodeException(
+                    message = "Not found such tag as $tag",
+                    code = ResponseError.Code.NOT_EXISTS_TAG
+                )
+            )
+        }
+
+        if (tags.size > 1) {
+            return Validated.Invalid(
+                CodeException(
+                    message = "Find several tags for $tag: $tags",
+                    code = ResponseError.Code.SEVERAL_TAG
+                )
+            )
+        }
+
+        return Validated.Valid(tags.first())
+    }
 }

@@ -1,7 +1,7 @@
 buildscript {
     ext {
-        kotlinVersion = "1.4.20"
-        exposedVersion = "0.28.1"
+        kotlinVersion = "1.4.21"
+        exposedVersion = "0.29.1"
     }
 }
 
@@ -44,6 +44,13 @@ dependencies {
             "org.slf4j:slf4j-api:1.7.30",
             project(":kotlin-dto"),
     )
+
+    testImplementation(
+            'org.assertj:assertj-core:3.12.2',
+            'org.junit.jupiter:junit-jupiter-api:5.5.2',
+            'io.mockk:mockk:1.9.3',
+            'org.junit.jupiter:junit-jupiter-engine:5.5.2',
+    )
 }
 
 jib {
@@ -67,4 +74,8 @@ jar {
 
 shadowJar {
     archiveFileName = "news-grabber.jar"
+}
+
+test {
+    useJUnitPlatform()
 }

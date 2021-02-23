@@ -6,6 +6,7 @@ import org.jetbrains.exposed.sql.ResultRow
 
 fun mapToNewsDto(resultRow: ResultRow) =
     News(
+        id = resultRow[NewsTable.id],
         message = resultRow[NewsTable.message],
         source = resultRow[NewsTable.newsSource],
         objectId = resultRow[NewsTable.objectId],
