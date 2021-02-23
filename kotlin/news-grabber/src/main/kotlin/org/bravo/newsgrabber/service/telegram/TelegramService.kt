@@ -81,9 +81,11 @@ object TelegramService {
 
             val news = mutableListOf<News>()
 
-            absDialogs.chats.first {
+            absDialogs.chats.ifEmpty {
+                return emptyList()
+            }.firstOrNull {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
-            }.also { chat ->
+            }?.also { chat ->
                 if (chat.title == null || !sourceFilter(chat.title!!)) {
                     logger.info("Chat - ${chat.title}, dont pass filter")
                     return emptyList()
@@ -111,14 +113,14 @@ object TelegramService {
 
             news
         } catch (rpcError: RpcErrorException) {
-            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
+            logger.warn("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
             runBlocking {
                 logger.info("delaying ${rpcError.tagInteger} sec")
                 delay(rpcError.tagInteger * 1000L)
             }
             emptyList()
         } catch (commonError: Exception) {
-            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
+            logger.warn("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
             emptyList()
         }
 
@@ -132,46 +134,50 @@ object TelegramService {
 
             val news = mutableListOf<News>()
 
-            absDialogs.chats.first {
-                it.id == absDialogs.dialogs[chatNumber].peer.id
-            }.also { chat ->
-                if (chat.title == null || !sourceFilter(chat.title!!)) {
-                    logger.info("Chat - ${chat.title}, dont pass filter")
+            absDialogs.chats
+                .ifEmpty {
                     return emptyList()
                 }
+                .firstOrNull {
+                    it.id == absDialogs.dialogs[chatNumber].peer.id
+                }?.also { chat ->
+                    if (chat.title == null || !sourceFilter(chat.title!!)) {
+                        logger.info("Chat - ${chat.title}, dont pass filter")
+                        return emptyList()
+                    }
 
-                logger.info("Chat - ${chat.title}, passed the filter")
+                    logger.info("Chat - ${chat.title}, passed the filter")
 
-                chat.toInputPeer().let { peer ->
-                    client.getAllMessages(peer)
-                }.filter { absMessage ->
-                    isMessage(absMessage)
-                }.map { absMessage ->
-                    absMessage as TLMessage
-                }.filter{ message ->
-                    tagFilter(message = message.message)
-                }.forEach { message ->
-                    news.add(
-                        News(
-                            message = message.message,
-                            source = NewsSource.telegramSource(chat.title ?: "empty"),
-                            objectId = message.id.toLong(),
-                            date = message.date.toLong()
+                    chat.toInputPeer().let { peer ->
+                        client.getAllMessages(peer)
+                    }.filter { absMessage ->
+                        isMessage(absMessage)
+                    }.map { absMessage ->
+                        absMessage as TLMessage
+                    }.filter { message ->
+                        tagFilter(message = message.message)
+                    }.forEach { message ->
+                        news.add(
+                            News(
+                                message = message.message,
+                                source = NewsSource.telegramSource(chat.title ?: "empty"),
+                                objectId = message.id.toLong(),
+                                date = message.date.toLong()
+                            )
                         )
-                    )
+                    }
                 }
-            }
 
             news
         } catch (rpcError: RpcErrorException) {
-            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
+            logger.warn("Error read all news from telegram by chat with number #$chatNumber: ${rpcError.message}")
             runBlocking {
                 logger.info("delaying ${rpcError.tagInteger} sec")
                 delay(rpcError.tagInteger * 1000L)
             }
             readAllNewsFromNew(chatNumber)
         } catch (commonError: Exception) {
-            logger.error("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
+            logger.warn("Error read all news from telegram by chat with number #$chatNumber: ${commonError.message}")
             emptyList()
         }
 
