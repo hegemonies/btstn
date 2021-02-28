@@ -24,9 +24,9 @@ object TelegramGrabberConsumer {
             return false
         }
 
-        // if (objectIdExists(news.objectId)) {
-        //     return false
-        // }
+        if (objectIdExists(news.objectId)) {
+            return false
+        }
 
         return true
     }
