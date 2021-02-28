@@ -58,10 +58,6 @@ object NewsRepository {
         }
     }
 
-    private fun selectNewsQuery(tag: String) =
-        NewsTable.select { NewsTable.message like "%#${tag}%" }
-            .orderBy(NewsTable.date, SortOrder.DESC)
-
     private fun findNewsByTagQuery(tagName: String) =
         NewsTable.innerJoin(NewsTagsTable)
             .innerJoin(TagsTable)
@@ -69,6 +65,7 @@ object NewsRepository {
             .select {
                 TagsTable.tag eq tagName.toLowerCase()
             }
+            .orderBy(NewsTable.date, SortOrder.DESC)
 
     private fun selectTag(tag: String) =
         TagsTable.select { TagsTable.tag eq tag.toLowerCase() }
