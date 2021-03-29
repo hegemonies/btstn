@@ -7,7 +7,7 @@ private val databaseProperties = DatabaseProperties()
 
 fun connectToDatabase() {
     Database.connect(
-        url = "jdbc:postgresql://${databaseProperties.host}:${databaseProperties.port}/bravo_news",
+        url = "jdbc:postgresql://${databaseProperties.host}:${databaseProperties.port}/${databaseProperties.databaseName}",
         driver = "org.postgresql.Driver",
         user = databaseProperties.username,
         password = databaseProperties.password

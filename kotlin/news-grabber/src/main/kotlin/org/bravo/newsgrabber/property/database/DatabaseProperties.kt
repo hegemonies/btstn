@@ -10,7 +10,8 @@ data class DatabaseProperties(
     val host: String = applicationPropertiesConfiguration[database.host],
     val username: String = applicationPropertiesConfiguration[database.username],
     val password: String = applicationPropertiesConfiguration[database.password],
-    val port: Int = applicationPropertiesConfiguration[database.port]
+    val port: Int = applicationPropertiesConfiguration[database.port],
+    val databaseName: String = applicationPropertiesConfiguration[database.databaseName]
 )
 
 private object database : PropertyGroup() {
@@ -18,4 +19,5 @@ private object database : PropertyGroup() {
     val port by intType
     val username by stringType
     val password by stringType
+    val databaseName by stringType
 }
