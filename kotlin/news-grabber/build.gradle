@@ -58,7 +58,7 @@ jib {
         image = "btstn/news-grabber:dev"
     }
     container {
-        user = "1000"
+        user = "nonroot"
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
     allowInsecureRegistries = true

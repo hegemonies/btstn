@@ -4,8 +4,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-class NewsgrabberApplication
+class NewsGrabberApplication
 
 fun main(args: Array<String>) {
-	runApplication<NewsgrabberApplication>(*args)
+    runApplication<NewsGrabberApplication>(*args)
 }
