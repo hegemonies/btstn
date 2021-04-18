@@ -2,6 +2,20 @@ version: '2.4'
 
 services:
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    restart: always
+    networks:
+      - bravonet
+    ports:
+      - 5672:5672
+      - 15672:15672
+    healthcheck:
+      test: [ "CMD-SHELL", "rabbitmq-diagnostics -q ping" ]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+
   db:
     image: postgres:latest
     restart: always
@@ -24,7 +38,7 @@ services:
     command: "postgres -c config_file=/etc/postgresql/postgresql.conf"
 
   api-proxy:
-    image: btstn/api-proxy:dev
+    image: lt:5000/api-proxy:arm-dev
     restart: always
     depends_on:
       news-grabber:
@@ -43,7 +57,7 @@ services:
       - bravonet
 
   news-grabber:
-    image: btstn/news-grabber:dev
+    image: lt:5000/news-grabber:arm-dev
     restart: always
     depends_on:
       db:
@@ -52,19 +66,19 @@ services:
       - DATABASE_HOST=db
       - DATABASE_USERNAME=bravo
       - DATABASE_PASSWORD=bravo
-      - TELEGRAM_APIID=
-      - TELEGRAM_APIHASH=
+      - TELEGRAM_APIID=1881970
+      - TELEGRAM_APIHASH=6ac70725ae453b2bbc2e7762f643a27d
       - TELEGRAM_PHONENUMBER=1234
 #      - TELEGRAM_AUTHKEYPATH=
 #      - TELEGRAM_DATACENTERPATH=
-      - APP_SOURCES=ON FLEEK investing;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;MarketTwits
+      - APP_SOURCES=ON FLEEK investing;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;MarketTwits;Сигналы РЦБ US;Довольный капитал / DCP Investment;Z ИНВЕСТИЦИИ;IF News
       - APP_STRATEGY=ALL
     mem_limit: 256m
     networks:
       - bravonet
 
   frontend:
-    image: btstn/frontend:dev
+    image: lt:5000/frontend:arm-dev
     restart: always
     depends_on:
       - api-proxy

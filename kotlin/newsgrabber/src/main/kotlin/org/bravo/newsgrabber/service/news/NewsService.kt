@@ -1,66 +1,69 @@
 package org.bravo.newsgrabber.service.news
 
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.bravo.newsgrabber.model.FetchStrategy
-import org.bravo.newsgrabber.property.app.AppProperties
-import org.bravo.newsgrabber.service.grabber.TelegramGrabber
-import org.bravo.newsgrabber.service.grabber.TelegramGrabberConsumer
+import org.bravo.newsgrabber.configuration.properties.app.AppProperties
+import org.bravo.newsgrabber.service.grabber.TelegramGrabberService
 import org.bravo.newsgrabber.strategy.telegram.TelegramFetchAllStrategy
 import org.bravo.newsgrabber.strategy.telegram.TelegramFetchLatestStrategy
 import org.slf4j.LoggerFactory
+import org.springframework.boot.CommandLineRunner
+import org.springframework.stereotype.Component
 import kotlin.system.exitProcess
 import kotlin.system.measureTimeMillis
 
-object NewsService {
-
-    private val logger = LoggerFactory.getLogger(this::class.java)
-    private val appProperties = AppProperties()
-
-    suspend fun runService() {
-        val grabberServices = mutableListOf<Job>()
-
-        grabberServices.add(
-            GlobalScope.launch {
-                TelegramGrabberConsumer.start()
-                runCatching {
-                    runTelegramGrabber()
-                }.getOrElse { error ->
-                    logger.error("Error while telegram grabbing: ${error.message}")
-                    exitProcess(1)
-                }
-            }
-        )
-
-        grabberServices.joinAll()
-    }
+@Component
+class NewsService(
+    private val appProperties: AppProperties,
+    private val telegramGrabberService: TelegramGrabberService,
+    private val telegramFetchAllStrategy: TelegramFetchAllStrategy,
+    private val telegramFetchLatestStrategy: TelegramFetchLatestStrategy
+) : CommandLineRunner {
 
     private suspend fun runTelegramGrabber() {
-        if (appProperties.strategy == FetchStrategy.ALL) {
+        if (appProperties.strategy == FetchStrategy.ALL.strategy) {
             logger.info("Grabbing ALL news from telegram starting...")
 
             measureTimeMillis {
-                TelegramGrabber(TelegramFetchAllStrategy).start()
+                telegramGrabberService.start(telegramFetchAllStrategy)
             }.also { elapsedTime ->
                 logger.info("Grabbing ALL news from telegram took $elapsedTime ms")
             }
         }
 
-        val grabberInstance = TelegramGrabber(TelegramFetchLatestStrategy)
-
         while (true) {
             logger.info("Grabbing LATEST news from telegram starting...")
 
             measureTimeMillis {
-                grabberInstance.start()
+                telegramGrabberService.start(telegramFetchLatestStrategy)
             }.also { elapsedTime ->
                 logger.info("Grabbing LATEST news from telegram took $elapsedTime ms")
             }
 
-            delay(20000)
+            delay(2000)
+        }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
+
+    override fun run(vararg args: String?) {
+        runBlocking {
+            val grabberServices = mutableListOf<Job>()
+
+            grabberServices.add(
+                GlobalScope.launch {
+                    runCatching {
+                        runTelegramGrabber()
+                    }.getOrElse { error ->
+                        logger.error("Error while telegram grabbing: ${error.message}")
+                        exitProcess(1)
+                    }
+                }
+            )
+
+            grabberServices.joinAll()
         }
     }
 }

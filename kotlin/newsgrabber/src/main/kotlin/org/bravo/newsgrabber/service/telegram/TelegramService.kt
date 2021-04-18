@@ -1,7 +1,6 @@
 package org.bravo.newsgrabber.service.telegram
 
-import com.github.badoualy.telegram.api.Kotlogram
-import com.github.badoualy.telegram.api.TelegramApp
+import com.github.badoualy.telegram.api.TelegramClient
 import com.github.badoualy.telegram.api.utils.id
 import com.github.badoualy.telegram.api.utils.title
 import com.github.badoualy.telegram.api.utils.toInputPeer
@@ -11,39 +10,22 @@ import com.github.badoualy.telegram.tl.api.auth.TLSentCode
 import com.github.badoualy.telegram.tl.exception.RpcErrorException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import org.bravo.newsgrabber.filter.sourceFilter
-import org.bravo.newsgrabber.filter.tagFilter
-import org.bravo.newsgrabber.filter.telegram.isMessage
-import org.bravo.newsgrabber.properties.telegram.TelegramProperties
-import org.bravo.newsgrabber.repository.TelegramStorage
+import org.bravo.newsgrabber.filter.Filter
+import org.bravo.newsgrabber.model.News
+import org.bravo.newsgrabber.model.NewsSource
+import org.bravo.newsgrabber.configuration.properties.telegram.TelegramProperties
 import org.bravo.newsgrabber.service.util.getAllDialogs
 import org.bravo.newsgrabber.service.util.getAllMessages
 import org.bravo.newsgrabber.service.util.getLatestMessagesFromAllDialogs
 import org.slf4j.LoggerFactory
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Component
 
-@Service
+@Component
 class TelegramService(
-    telegramProperties: TelegramProperties
+    private val telegramClient: TelegramClient,
+    private val telegramProperties: TelegramProperties,
+    private val filter: Filter
 ) {
-
-    private val application = with(telegramProperties) {
-        TelegramApp(
-            apiId = apiId,
-            apiHash = apiHash,
-            appVersion = appVersion,
-            deviceModel = clientDeviceModel,
-            langCode = languageCode,
-            systemVersion = clientDeviceSystemVersion
-        )
-    }
-
-    private val storage = TelegramStorage()
-
-    private val client = Kotlogram.getDefaultClient(
-        application = application,
-        apiStorage = storage
-    )
 
     /**
      * Request of auth code for authenticate
@@ -52,9 +34,9 @@ class TelegramService(
      * @throws IOException
      */
     fun authCodeRequest(): TLSentCode =
-        client.authSendCode(
+        telegramClient.authSendCode(
             allowFlashcall = false,
-            phoneNumber = properties.phoneNumber,
+            phoneNumber = telegramProperties.phoneNumber,
             currentNumber = true
         )
 
@@ -65,8 +47,8 @@ class TelegramService(
      * @throws IOException
      */
     fun signIn(codeFromMessage: String, phoneCode: String): TLAuthorization =
-        client.authSignIn(
-            properties.phoneNumber,
+        telegramClient.authSignIn(
+            telegramProperties.phoneNumber,
             codeFromMessage,
             phoneCode
         )
@@ -77,7 +59,7 @@ class TelegramService(
      */
     fun readLatestNewsFrom(chatNumber: Int): List<News> =
         try {
-            val absDialogs = client.getAllDialogs()
+            val absDialogs = telegramClient.getAllDialogs()
 
             val news = mutableListOf<News>()
 
@@ -86,7 +68,7 @@ class TelegramService(
             }.firstOrNull {
                 it.id == absDialogs.dialogs[chatNumber].peer.id
             }?.also { chat ->
-                if (chat.title == null || !sourceFilter(chat.title!!)) {
+                if (chat.title == null || !filter.sourceFilter(chat.title!!)) {
                     logger.info("Chat - ${chat.title}, dont pass filter")
                     return emptyList()
                 }
@@ -94,9 +76,9 @@ class TelegramService(
                 logger.info("Chat - ${chat.title}, passed the filter")
 
                 chat.toInputPeer().let { peer ->
-                    client.getLatestMessagesFromAllDialogs(peer)
+                    telegramClient.getLatestMessagesFromAllDialogs(peer)
                 }.filter { absMessage ->
-                    isMessage(absMessage)
+                    filter.absMessageFilter(absMessage)
                 }.map { absMessage ->
                     absMessage as TLMessage
                 }.forEach { message ->
@@ -130,7 +112,7 @@ class TelegramService(
      */
     fun readAllNewsFromNew(chatNumber: Int): List<News> =
         try {
-            val absDialogs = client.getAllDialogs()
+            val absDialogs = telegramClient.getAllDialogs()
 
             val news = mutableListOf<News>()
 
@@ -141,7 +123,7 @@ class TelegramService(
                 .firstOrNull {
                     it.id == absDialogs.dialogs[chatNumber].peer.id
                 }?.also { chat ->
-                    if (chat.title == null || !sourceFilter(chat.title!!)) {
+                    if (chat.title == null || !filter.sourceFilter(chat.title!!)) {
                         logger.info("Chat - ${chat.title}, dont pass filter")
                         return emptyList()
                     }
@@ -149,13 +131,13 @@ class TelegramService(
                     logger.info("Chat - ${chat.title}, passed the filter")
 
                     chat.toInputPeer().let { peer ->
-                        client.getAllMessages(peer)
+                        telegramClient.getAllMessages(peer)
                     }.filter { absMessage ->
-                        isMessage(absMessage)
+                        filter.absMessageFilter(absMessage)
                     }.map { absMessage ->
                         absMessage as TLMessage
                     }.filter { message ->
-                        tagFilter(message = message.message)
+                        filter.tagFilter(message = message.message)
                     }.forEach { message ->
                         news.add(
                             News(
@@ -181,5 +163,7 @@ class TelegramService(
             emptyList()
         }
 
-    private val logger = LoggerFactory.getLogger(this::class.java)
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
+    }
 }

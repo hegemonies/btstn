@@ -2,9 +2,13 @@ package org.bravo.newsgrabber.strategy.telegram
 
 import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.service.telegram.TelegramService
+import org.springframework.stereotype.Service
 
-object TelegramFetchAllStrategy : IFetchStrategy<Int, List<News>> {
+@Service
+class TelegramFetchAllStrategy(
+    private val telegramService: TelegramService
+) : IFetchStrategy<Int, List<News>> {
 
     override fun fetch(from: Int): List<News> =
-        TelegramService.readAllNewsFromNew(from)
+        telegramService.readAllNewsFromNew(from)
 }

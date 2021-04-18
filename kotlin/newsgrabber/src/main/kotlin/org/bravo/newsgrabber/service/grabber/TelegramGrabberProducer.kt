@@ -1,17 +1,20 @@
 package org.bravo.newsgrabber.service.grabber
 
-import org.bravo.model.dto.News
-import org.bravo.newsgrabber.channel.telegramGrabberChannel
+import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.strategy.telegram.IFetchStrategy
-import org.slf4j.LoggerFactory
+import org.springframework.amqp.core.Queue
+import org.springframework.amqp.rabbit.core.RabbitTemplate
+import org.springframework.stereotype.Component
 
+@Component
 class TelegramGrabberProducer(
-    private val fetchStrategy: IFetchStrategy<Int, List<News>>
+    private val rabbitTemplate: RabbitTemplate,
+    private val queue: Queue
 ) {
 
-    suspend fun grab(chatNumber: Int) {
+    suspend fun grab(fetchStrategy: IFetchStrategy<Int, List<News>>, chatNumber: Int) {
         fetchStrategy.fetch(chatNumber).forEach { news ->
-            telegramGrabberChannel.send(news)
+            rabbitTemplate.convertAndSend(queue.name, news) // TODO: подумать над сериализацией
         }
     }
 }

@@ -17,6 +17,8 @@ class TelegramStorage(
     private val dataCenterFile = applicationContext.getResource("dc.save")
 
     override fun deleteAuthKey() {
+        logger.info("Deleting auth key")
+
         runCatching {
             authKeyFile.file.delete()
         }.getOrElse { error ->
@@ -25,6 +27,8 @@ class TelegramStorage(
     }
 
     override fun deleteDc() {
+        logger.info("Deleting datacenter file")
+
         runCatching {
             dataCenterFile.file.delete()
         }.getOrElse { error ->
@@ -33,6 +37,8 @@ class TelegramStorage(
     }
 
     override fun loadAuthKey(): AuthKey? {
+        logger.info("Loading auth key")
+
         return runCatching {
             AuthKey(authKeyFile.file.readBytes())
         }.getOrElse { error ->
@@ -43,24 +49,46 @@ class TelegramStorage(
     }
 
     override fun loadDc(): DataCenter? {
-        TODO("Not yet implemented")
+        logger.info("Loading datacenter file")
+
+        return runCatching {
+            authKeyFile.file.readBytes().toString().split(":").let {
+                DataCenter(it[0], Integer.parseInt(it[1]))
+            }
+        }.getOrElse { error ->
+            logger.error("Can not read auth.key file: ${error.message}")
+
+            null
+        }
     }
 
     override fun loadSession(): MTSession? {
-        TODO("Not yet implemented")
+        logger.info("Loading session")
+
+        return null
     }
 
     override fun saveAuthKey(authKey: AuthKey) {
-        TODO("Not yet implemented")
+        logger.info("Saving auth key")
+
+        runCatching {
+            authKeyFile.file.writeText(authKey.key.toString())
+        }.getOrElse { error ->
+            logger.error("Can not save auth key: ${error.message}")
+        }
     }
 
     override fun saveDc(dataCenter: DataCenter) {
-        TODO("Not yet implemented")
+        logger.info("Saving datacenter file")
+
+        runCatching {
+            dataCenterFile.file.writeText(dataCenter.toString())
+        }.getOrElse { error ->
+            logger.error("Can not save datacenter file: ${error.message}")
+        }
     }
 
-    override fun saveSession(session: MTSession?) {
-        TODO("Not yet implemented")
-    }
+    override fun saveSession(session: MTSession?) {}
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)

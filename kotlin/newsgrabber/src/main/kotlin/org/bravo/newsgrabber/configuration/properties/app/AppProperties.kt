@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.properties.app
+package org.bravo.newsgrabber.configuration.properties.app
 
 import org.bravo.newsgrabber.model.FetchStrategy
 import org.springframework.boot.context.properties.ConfigurationProperties
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotBlank
 class AppProperties {
 
     @NotBlank
-    val strategy: String = FetchStrategy.ALL.strategy
+    var strategy: String = FetchStrategy.ALL.strategy
 
-    val sources: List<String> = emptyList()
+    var sources: List<String> = emptyList()
 }
