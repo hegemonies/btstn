@@ -13,3 +13,8 @@ kotlin/kotlin-dto/.idea/
 
 kotlin/build/
 kotlin/.gradle/
+
+kotlin/newsgrabber/build
+kotlin/newsgrabber/.gradle
+kotlin/newsgrabber/src/main/resources/auth.key
+kotlin/newsgrabber/src/main/resources/dc.save

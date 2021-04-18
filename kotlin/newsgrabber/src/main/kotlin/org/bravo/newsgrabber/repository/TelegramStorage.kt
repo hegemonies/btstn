@@ -52,11 +52,11 @@ class TelegramStorage(
         logger.info("Loading datacenter file")
 
         return runCatching {
-            authKeyFile.file.readBytes().toString().split(":").let {
+            dataCenterFile.file.readBytes().toString(charset("UTF-8")).split(":").let {
                 DataCenter(it[0], Integer.parseInt(it[1]))
             }
         }.getOrElse { error ->
-            logger.error("Can not read auth.key file: ${error.message}")
+            logger.error("Can not read dc.save file: ${error.message}")
 
             null
         }
