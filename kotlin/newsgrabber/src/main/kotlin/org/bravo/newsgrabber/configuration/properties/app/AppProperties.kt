@@ -12,5 +12,5 @@ class AppProperties {
     @NotBlank
     var strategy: String = FetchStrategy.ALL.strategy
 
-    var sources: List<String> = emptyList()
+    lateinit var sources: List<String>
 }

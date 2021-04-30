@@ -1,8 +1,10 @@
 plugins {
-    id "org.springframework.boot" version "2.4.4"
+    id "org.springframework.boot" version "2.4.5"
     id "io.spring.dependency-management" version "1.0.11.RELEASE"
     id "org.jetbrains.kotlin.jvm" version "1.4.31"
     id 'org.jetbrains.kotlin.plugin.spring' version '1.4.31'
+    id "org.jetbrains.kotlin.kapt" version "1.4.31"
+
 //    id "org.springframework.experimental.aot" version "0.9.1"
 }
 
@@ -32,12 +34,10 @@ dependencies {
             "org.jetbrains.kotlin:kotlin-reflect",
             "org.jetbrains.kotlin:kotlin-stdlib-jdk8",
 			"org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2",
-
-			// work with files
-			"commons-io:commons-io:2.8.0",
     )
 
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 
     testImplementation(
             "org.springframework.boot:spring-boot-starter-test",

@@ -14,7 +14,7 @@ class TelegramGrabberProducer(
 
     suspend fun grab(fetchStrategy: IFetchStrategy<Int, List<News>>, chatNumber: Int) {
         fetchStrategy.fetch(chatNumber).forEach { news ->
-            rabbitTemplate.convertAndSend(queue.name, news) // TODO: подумать над сериализацией
+            rabbitTemplate.convertAndSend(queue.name, news.toString()) // TODO: подумать над сериализацией
         }
     }
 }
