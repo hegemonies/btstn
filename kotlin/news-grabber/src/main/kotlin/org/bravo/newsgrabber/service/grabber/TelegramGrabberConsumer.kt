@@ -24,7 +24,7 @@ object TelegramGrabberConsumer {
             return false
         }
 
-        if (objectIdExists(news.objectId)) {
+        if (objectIdExists(news.objectId + news.source.hashCode())) {
             return false
         }
 
@@ -46,7 +46,7 @@ object TelegramGrabberConsumer {
                     NewsTable.insert {
                         it[message] = newsDto.message
                         it[newsSource] = newsDto.source
-                        it[objectId] = newsDto.objectId
+                        it[objectId] = newsDto.objectId + newsDto.source.hashCode()
                         it[date] = newsDto.date
                     }.resultedValues?.first().let {
                         News.fromResultRow(it!!)
