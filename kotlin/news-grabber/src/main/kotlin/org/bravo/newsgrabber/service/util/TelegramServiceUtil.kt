@@ -46,7 +46,7 @@ fun TelegramClient.getAllMessages(peer: TLAbsInputPeer?): List<TLAbsMessage> {
 
     val messagesList = mutableListOf<TLAbsMessage>()
 
-    while (true) {
+    while (offset <= 5000) {
         val messages = this.getMessages(peer, limit, offset)
 
         if (messages.messages.count() <= 0) {
