@@ -26,7 +26,6 @@ object TelegramGrabberConsumer {
 
         val objectId = news.objectId +
                 if (news.source.hashCode() < 0) news.source.hashCode() * -1 else news.source.hashCode()
-        logger.info("objectId = ${news.objectId}; source.hash = ${news.source.hashCode()}; sum = $objectId")
 
         if (objectIdExists(objectId)) {
             return false
