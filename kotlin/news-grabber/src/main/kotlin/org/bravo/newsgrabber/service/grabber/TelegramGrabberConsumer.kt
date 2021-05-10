@@ -9,6 +9,7 @@ import org.bravo.model.table.NewsTagsTable
 import org.bravo.model.table.TagsTable
 import org.bravo.newsgrabber.channel.telegramGrabberChannel
 import org.bravo.newsgrabber.filter.objectIdExists
+import org.bravo.newsgrabber.service.util.transformSourceToNumber
 import org.bravo.newsgrabber.util.findTags
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -24,8 +25,7 @@ object TelegramGrabberConsumer {
             return false
         }
 
-        val objectId = news.objectId +
-                if (news.source.hashCode() < 0) news.source.hashCode() * -1 else news.source.hashCode()
+        val objectId = news.objectId + transformSourceToNumber(news.source)
 
         if (objectIdExists(objectId)) {
             return false
@@ -45,8 +45,7 @@ object TelegramGrabberConsumer {
                     return@newSuspendedTransaction
                 }
 
-                val newObjectId = newsDto.objectId +
-                        if (newsDto.source.hashCode() < 0) newsDto.source.hashCode() * -1 else newsDto.source.hashCode()
+                val newObjectId = newsDto.objectId + transformSourceToNumber(newsDto.source)
 
                 val news = runCatching {
                     NewsTable.insert {
