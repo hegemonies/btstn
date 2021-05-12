@@ -46,7 +46,7 @@ fun TelegramClient.getAllMessages(peer: TLAbsInputPeer?): List<TLAbsMessage> {
 
     val messagesList = mutableListOf<TLAbsMessage>()
 
-    while (true) {
+    while (offset <= 5000) {
         val messages = this.getMessages(peer, limit, offset)
 
         if (messages.messages.count() <= 0) {
@@ -69,3 +69,13 @@ fun TelegramClient.getAllMessages(peer: TLAbsInputPeer?): List<TLAbsMessage> {
  */
 fun TelegramClient.getLatestMessagesFromAllDialogs(peer: TLAbsInputPeer?): List<TLAbsMessage> =
     this.getMessages(peer, limit = 100, offset = 0).messages
+
+fun transformSourceToNumber(source: String): Int {
+    val hash = source.hashCode()
+
+    if (hash < 0) {
+        return hash * -1
+    }
+
+    return hash
+}
