@@ -10,10 +10,10 @@ import com.github.badoualy.telegram.tl.api.auth.TLSentCode
 import com.github.badoualy.telegram.tl.exception.RpcErrorException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
+import org.bravo.newsgrabber.configuration.properties.telegram.TelegramProperties
 import org.bravo.newsgrabber.filter.Filter
 import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.model.NewsSource
-import org.bravo.newsgrabber.configuration.properties.telegram.TelegramProperties
 import org.bravo.newsgrabber.service.util.getAllDialogs
 import org.bravo.newsgrabber.service.util.getAllMessages
 import org.bravo.newsgrabber.service.util.getLatestMessagesFromAllDialogs

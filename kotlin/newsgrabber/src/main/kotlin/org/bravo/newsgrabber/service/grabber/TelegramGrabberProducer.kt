@@ -1,7 +1,13 @@
 package org.bravo.newsgrabber.service.grabber
 
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.strategy.telegram.IFetchStrategy
+import org.slf4j.LoggerFactory
 import org.springframework.amqp.core.Queue
 import org.springframework.amqp.rabbit.core.RabbitTemplate
 import org.springframework.stereotype.Component
@@ -13,8 +19,26 @@ class TelegramGrabberProducer(
 ) {
 
     suspend fun grab(fetchStrategy: IFetchStrategy<Int, List<News>>, chatNumber: Int) {
-        fetchStrategy.fetch(chatNumber).forEach { news ->
-            rabbitTemplate.convertAndSend(queue.name, news.toString()) // TODO: подумать над сериализацией
+        val newsList = fetchStrategy.fetch(chatNumber)
+
+        GlobalScope.launch(Dispatchers.IO) {
+            newsList.forEach { news ->
+                val json = runCatching {
+                    Json.encodeToString(
+                        news.copy(
+                            message = news.message.replace("\n", "[new-line]")
+                        )
+                    )
+                }.getOrElse { error ->
+                    logger.error("Can not send news to rabbitmq: ${error.message}")
+                    return@forEach
+                }
+                rabbitTemplate.convertAndSend(queue.name, json)
+            }
         }
+    }
+
+    companion object {
+        private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 }

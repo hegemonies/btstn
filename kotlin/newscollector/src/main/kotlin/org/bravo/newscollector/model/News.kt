@@ -10,6 +10,7 @@ data class News(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = -1L,
 
+    @Lob
     val message: String,
 
     val source: String,

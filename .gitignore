@@ -16,5 +16,10 @@ kotlin/.gradle/
 
 kotlin/newsgrabber/build
 kotlin/newsgrabber/.gradle
+kotlin/newsgrabber/gradle
 kotlin/newsgrabber/src/main/resources/auth.key
 kotlin/newsgrabber/src/main/resources/dc.save
+
+kotlin/newscollector/build
+kotlin/newscollector/.gradle
+kotlin/newscollector/gradle

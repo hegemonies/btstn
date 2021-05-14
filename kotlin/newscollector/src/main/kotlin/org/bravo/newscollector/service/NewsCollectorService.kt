@@ -1,158 +1,120 @@
 package org.bravo.newscollector.service
 
-import org.bravo.newscollector.model.News
+import kotlinx.serialization.decodeFromString
+import kotlinx.serialization.json.Json
+import org.bravo.newscollector.converter.toModel
+import org.bravo.newscollector.dto.News
 import org.bravo.newscollector.model.NewsTags
 import org.bravo.newscollector.model.NewsTagsKey
 import org.bravo.newscollector.model.Tag
 import org.bravo.newscollector.repository.NewsRepository
 import org.bravo.newscollector.repository.NewsTagsRepository
 import org.bravo.newscollector.repository.TagRepository
+import org.bravo.newscollector.utils.findTags
+import org.bravo.newscollector.utils.transformSourceToNumber
 import org.slf4j.LoggerFactory
-import org.springframework.boot.context.event.ApplicationReadyEvent
-import org.springframework.context.event.EventListener
+import org.springframework.amqp.core.Message
+import org.springframework.amqp.core.MessageListener
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.interceptor.TransactionAspectSupport
+import java.nio.charset.Charset
 
 @Service
 class NewsCollectorService(
     private val newsRepository: NewsRepository,
     private val tagRepository: TagRepository,
     private val newsTagsRepository: NewsTagsRepository
-) {
+) : MessageListener {
 
-    @EventListener(ApplicationReadyEvent::class)
-    fun foo() {
-        val tag = tagRepository.save(
-            Tag(
-                tag = "AAPL"
-            )
-        )
+    private fun filterNews(message: String, objectId: Long, source: String): Boolean {
+        if (message.isEmpty()) {
+            return false
+        }
 
-        val news = newsRepository.save(
-            News(
-                message = "news message",
-                source = "telegram",
-                objectId = 1,
-                createdAt = 1
-            )
-        )
+        if (newsRepository.existsByObjectId(objectId + transformSourceToNumber(source))) {
+            return false
+        }
 
-        newsTagsRepository.save(
-            NewsTags(
-                id = NewsTagsKey(
-                    tagId = tag.id,
-                    newsId = news.id
-                ),
-                tag = tag,
-                news = news
-            )
-        )
-
-        logger.info("$tag")
-        logger.info("$news")
-        logger.info("${newsRepository.findAll()}")
-        logger.info("${tagRepository.findAll()}")
-        logger.info("${newsTagsRepository.findAll()}")
+        return true
     }
+
+    override fun onMessage(message: Message) {
+        val news = decodeMessage(message.body).getOrElse { error ->
+            logger.warn("Can not decode message to News dto: ${error.message}")
+            return
+        }.let { dto ->
+            dto.copy(
+                message = transformNewsMessage(dto.message)
+            )
+        }
+
+        saveToDatabase(news)
+    }
+
+    private fun decodeMessage(message: ByteArray): Result<News> =
+        runCatching {
+            Json.decodeFromString(message.toString(Charset.forName("UTF-8")))
+        }
+
+    private fun transformNewsMessage(message: String): String =
+        message.replace("[new-line]", "\n")
+
+    @Transactional
+    fun saveToDatabase(news: News) {
+        if (!filterNews(news.message, news.objectId, news.source)) {
+            return
+        }
+
+        val newsModel = runCatching {
+            newsRepository.save(news.toModel())
+        }.getOrElse { error ->
+            logger.warn("Can not save news to database: ${error.message}")
+            return
+        }
+
+        val tags = findTags(news.message)
+
+        val tagModels = saveTags(tags).getOrElse { error ->
+            logger.warn("Can not save tags to database: ${error.message}")
+            rollbackTransaction()
+            return
+        }
+
+        tagModels.forEach { tagModel ->
+            runCatching {
+                newsTagsRepository.save(
+                    NewsTags(
+                        id = NewsTagsKey(
+                            tagId = tagModel.id,
+                            newsId = newsModel.id
+                        ),
+                        news = newsModel,
+                        tag = tagModel
+                    )
+                )
+            }.getOrElse { error ->
+                logger.warn("Can not save news tags refs to database: ${error.message}")
+                rollbackTransaction()
+                return
+            }
+        }
+    }
+
+    /**
+     * Находит или создает новые модели тегов в базе данных.
+     */
+    private fun saveTags(tags: List<String>): Result<List<Tag>> =
+        runCatching {
+            tags.map { tag ->
+                tagRepository.findByTag(tag)
+                    ?: tagRepository.save(Tag(tag = tag))
+            }
+        }
+
+    private fun rollbackTransaction() = TransactionAspectSupport.currentTransactionStatus().setRollbackOnly()
 
     companion object {
         private val logger = LoggerFactory.getLogger(this::class.java.declaringClass)
     }
 }
-
-
-//object TelegramGrabberConsumer {
-//    private val logger = LoggerFactory.getLogger(this::class.java)
-//
-//    private fun filterNews(news: News): Boolean {
-//        if (news.message.isEmpty()) {
-//            return false
-//        }
-//
-//        if (objectIdExists(news.objectId)) {
-//            return false
-//        }
-//
-//        return true
-//    }
-//
-//    private suspend fun saveToDatabase(newsDto: News) {
-//        newSuspendedTransaction {
-//            runCatching {
-//                // save to database
-//                logger.debug("insert news #${newsDto.objectId}")
-//
-//                // filter
-//                if (!filterNews(newsDto)) {
-//                    return@newSuspendedTransaction
-//                }
-//
-//                val news = runCatching {
-//                    NewsTable.insert {
-//                        it[message] = newsDto.message
-//                        it[newsSource] = newsDto.source
-//                        it[objectId] = newsDto.objectId
-//                        it[date] = newsDto.date
-//                    }.resultedValues?.first().let {
-//                        News.fromResultRow(it!!)
-//                    }
-//                }.getOrElse { error ->
-//                    logger.error("Can not insert news: ${error.message}")
-//                    return@newSuspendedTransaction
-//                }
-//
-//                val tags = findTags(news.message).also {
-//                    logger.debug("find tags: $it")
-//                }
-//
-//                tags.forEach { tag ->
-//                    val tagDto = TagsTable.select { TagsTable.tag eq tag.toLowerCase() }
-//                        .map { row ->
-//                            Tag.fromResultRow(row)
-//                        }.firstOrNull()
-//                        ?: run {
-//                            TagsTable.insert {
-//                                it[TagsTable.tag] = tag.toLowerCase()
-//                            }
-//
-//                            TagsTable.select { TagsTable.tag eq tag.toLowerCase() }
-//                                .map { row ->
-//                                    Tag.fromResultRow(row)
-//                                }.firstOrNull()
-//                                ?: run {
-//                                    logger.error("Can not find tag #$tag")
-//                                    return@forEach
-//                                }
-//                        }
-//
-//                    NewsTagsTable.insert {
-//                        it[tagId] = tagDto.id
-//                        it[newsId] = news.id
-//                    }
-//                }
-//            }.getOrElse { error ->
-//                logger.error("Can not save news to database: ${error.message}")
-//                rollback()
-//            }
-//        }
-//    }
-//
-//    suspend fun start() {
-//        GlobalScope.launch {
-//            infinityConsume()
-//        }
-//    }
-//
-//    private suspend fun infinityConsume() {
-//        logger.info("TelegramGrabberConsumer is started")
-//
-//        while (true) {
-//            val news = telegramGrabberChannel.receive()
-//
-//            measureTimeMillis {
-//                saveToDatabase(news)
-//            }.also { elapsedTime ->
-//                logger.debug("Insert news took: $elapsedTime ms")
-//            }
-//        }
-//    }
-//}

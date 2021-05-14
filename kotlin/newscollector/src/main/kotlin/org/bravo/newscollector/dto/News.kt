@@ -1,4 +1,4 @@
-package org.bravo.newsgrabber.model
+package org.bravo.newscollector.dto
 
 import kotlinx.serialization.Serializable
 

@@ -1,8 +1,8 @@
 package org.bravo.newsgrabber.service.grabber
 
 import kotlinx.coroutines.delay
-import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.configuration.properties.telegram.TelegramProperties
+import org.bravo.newsgrabber.model.News
 import org.bravo.newsgrabber.strategy.telegram.IFetchStrategy
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
