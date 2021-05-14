@@ -66,9 +66,9 @@ services:
       - DATABASE_HOST=db
       - DATABASE_USERNAME=bravo
       - DATABASE_PASSWORD=bravo
-      - TELEGRAM_APIID=1881970
-      - TELEGRAM_APIHASH=6ac70725ae453b2bbc2e7762f643a27d
-      - TELEGRAM_PHONENUMBER=1234
+      - TELEGRAM_APIID=
+      - TELEGRAM_APIHASH=
+      - TELEGRAM_PHONENUMBER=
 #      - TELEGRAM_AUTHKEYPATH=
 #      - TELEGRAM_DATACENTERPATH=
       - APP_SOURCES=ON FLEEK investing;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;MarketTwits;Сигналы РЦБ US;Довольный капитал / DCP Investment;Z ИНВЕСТИЦИИ;IF News
