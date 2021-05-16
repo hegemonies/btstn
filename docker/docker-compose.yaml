@@ -57,23 +57,32 @@ services:
       - bravonet
 
   news-grabber:
-    image: lt:5000/news-grabber:arm-dev
+    image: lt:5000/newsgrabber:arm-dev
     restart: always
     depends_on:
-      db:
+      rabbitmq:
         condition: service_healthy
     environment:
-      - DATABASE_HOST=db
-      - DATABASE_USERNAME=bravo
-      - DATABASE_PASSWORD=bravo
       - TELEGRAM_APIID=
       - TELEGRAM_APIHASH=
       - TELEGRAM_PHONENUMBER=
-#      - TELEGRAM_AUTHKEYPATH=
-#      - TELEGRAM_DATACENTERPATH=
       - APP_SOURCES=ON FLEEK investing;РынкиДеньгиВласть | РДВ;Сигналы РЦБ;IF Stocks;MarketTwits;Сигналы РЦБ US;Довольный капитал / DCP Investment;Z ИНВЕСТИЦИИ;IF News
       - APP_STRATEGY=ALL
     mem_limit: 256m
+    networks:
+      - bravonet
+
+  news-collector:
+    image: lt:5000/newscollector:arm-dev
+    restart: always
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - DATABASE_HOST=db
     networks:
       - bravonet
 

@@ -5,7 +5,7 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.serialization' version "1.5.0"
     id 'org.jetbrains.kotlin.plugin.spring' version '1.5.0'
     id "org.jetbrains.kotlin.kapt" version "1.5.0"
-
+    id "com.google.cloud.tools.jib" version "3.0.0"
 //    id "org.springframework.experimental.aot" version "0.9.1"
 }
 
@@ -65,3 +65,15 @@ test {
 //    builder = "paketobuildpacks/builder:tiny"
 //    environment = [BP_NATIVE_IMAGE: true]
 //}
+
+jib {
+    to {
+        image = "btstn/news-grabber:dev"
+    }
+    container {
+        user = "1000"
+        creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+    allowInsecureRegistries = true
+}
+

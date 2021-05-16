@@ -6,7 +6,7 @@ plugins {
     id "org.jetbrains.kotlin.kapt" version "1.5.0"
     id "org.jetbrains.kotlin.plugin.jpa" version "1.5.0"
     id "org.jetbrains.kotlin.plugin.serialization" version "1.5.0"
-
+    id "com.google.cloud.tools.jib" version "3.0.0"
 //    id "org.springframework.experimental.aot" version "0.9.1"
 }
 
@@ -52,4 +52,16 @@ compileKotlin {
 
 test {
     useJUnitPlatform()
+}
+
+
+jib {
+    to {
+        image = "btstn/news-collector:dev"
+    }
+    container {
+        user = "1000"
+        creationTime = "USE_CURRENT_TIMESTAMP"
+    }
+    allowInsecureRegistries = true
 }
