@@ -18,7 +18,7 @@ private val logger = LoggerFactory.getLogger("NewsRoute")
 
 fun Route.news() {
 
-    post("/news") {
+    post("/api/news") {
         logger.debug(
             "[${this.call.callId}] Start handle ${call.request.path()} request " +
                 "from ${call.request.local.host} ${call.request.origin.host}"
@@ -55,20 +55,20 @@ private fun handleResponse(response: Either<ResponseError, Response>): Pair<Http
     return when (response) {
         is Either.Left ->
             when {
-                response.a.code.isClientError() ->
-                    HttpStatusCode.BadRequest to response.a
+                response.value.code.isClientError() ->
+                    HttpStatusCode.BadRequest to response.value
 
-                response.a.code.isServerError() ->
-                    HttpStatusCode.InternalServerError to response.a
+                response.value.code.isServerError() ->
+                    HttpStatusCode.InternalServerError to response.value
 
                 else ->
                     HttpStatusCode.InternalServerError to ResponseError(
                         message = errorMessage,
-                        cause = response.a.message
+                        cause = response.value.message
                     )
             }
 
         is Either.Right ->
-            HttpStatusCode.OK to response.b
+            HttpStatusCode.OK to response.value
     }
 }

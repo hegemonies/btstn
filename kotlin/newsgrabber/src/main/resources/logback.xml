@@ -6,9 +6,10 @@
         </encoder>
     </appender>
 
-    <logger name="io.netty" level="ERROR"/>
+    <logger name="com.github.badoualy" level="ERROR" />
 
-    <root level="DEBUG">
+    <root level="INFO">
         <appender-ref ref="STDOUT" />
     </root>
+
 </configuration>

@@ -1,9 +1,9 @@
 rootProject.name = 'btstn'
 
 def projects = [
-        'news-grabber',
         'api-proxy',
         'kotlin-dto',
+        'newsgrabber'
 ]
 
 projects.each { name ->

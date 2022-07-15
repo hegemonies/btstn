@@ -15,7 +15,7 @@ object NewsService : INewsService {
         val commonErrorMessage = "Can not find news"
 
         ValidationService.validateTag(tag).handleError { error ->
-            return Either.left(
+            return Either.Left(
                 ResponseError(
                     message = commonErrorMessage,
                     cause = error.message,
@@ -26,11 +26,11 @@ object NewsService : INewsService {
 
         return when (val news = NewsRepository.findByTag(tag, pagination)) {
             is Either.Left ->
-                Either.left(news.a)
+                Either.Left(news.value)
 
             is Either.Right ->
-                news.b.let { (newsList, total) ->
-                    Either.right(
+                news.value.let { (newsList, total) ->
+                    Either.Right(
                         SearchNewsResponse(
                             view = newsList.map { SearchNewsResponseView.fromNews(it) },
                             total = total
