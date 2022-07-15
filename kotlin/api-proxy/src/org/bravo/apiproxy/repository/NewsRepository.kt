@@ -30,13 +30,13 @@ object NewsRepository {
             val errorMessage = "Can not find news by tag"
 
             getTagModel(tagName).handleError { error ->
-                return@newSuspendedTransaction Either.left(ResponseError.fromCodeException(errorMessage, error))
+                return@newSuspendedTransaction Either.Left(ResponseError.fromCodeException(errorMessage, error))
             }
 
             val selectNewsQuery = runCatching {
                 findNewsByTagQuery(tagName)
             }.getOrElse { error ->
-                return@newSuspendedTransaction Either.left(
+                return@newSuspendedTransaction Either.Left(
                     ResponseError(
                         message = errorMessage,
                         cause = error.message,
@@ -52,7 +52,7 @@ object NewsRepository {
                     News.fromResultRow(row)
                 }
 
-            Either.right(
+            Either.Right(
                 news to total
             )
         }

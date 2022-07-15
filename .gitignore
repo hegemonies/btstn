@@ -1,8 +1,8 @@
-kotlin/news-grabber/build/
-kotlin/news-grabber/.gradle/
-kotlin/news-grabber/.idea/
-kotlin/news-grabber/src/main/resources/auth.key
-kotlin/news-grabber/src/main/resources/dc.save
+kotlin/newsgrabber/build/
+kotlin/newsgrabber/.gradle/
+kotlin/newsgrabber/.idea/
+kotlin/newsgrabber/src/main/resources/auth.key
+kotlin/newsgrabber/src/main/resources/dc.save
 
 .idea/
 

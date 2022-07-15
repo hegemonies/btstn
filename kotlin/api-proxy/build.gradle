@@ -1,16 +1,18 @@
 buildscript {
     ext {
         ktorVersion = "1.5.0"
-        kotlinVersion = "1.4.20"
+        kotlinVersion = "1.6.10"
         logbackVersion = "1.2.1"
-        exposedVersion = "0.28.1"
+        exposedVersion = "0.37.3"
     }
 }
 
 plugins {
+    id 'application'
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
-    id "com.google.cloud.tools.jib" version "2.6.0"
-    id "com.github.johnrengelman.shadow" version "6.1.0"
+    id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlinVersion"
+    id "com.google.cloud.tools.jib" version "3.1.4"
+    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 apply plugin: 'kotlin'
@@ -49,10 +51,10 @@ dependencies {
             "org.jetbrains.exposed:exposed-jdbc:$exposedVersion",
 
             // Postgresql driver
-            "org.postgresql:postgresql:42.2.18",
+            "org.postgresql:postgresql:42.3.1",
 
             // ArrowKt
-            "io.arrow-kt:arrow-core:0.11.0",
+            "io.arrow-kt:arrow-core:1.0.1",
 
             // DTO
             project(":kotlin-dto"),

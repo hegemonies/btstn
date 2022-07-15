@@ -3,7 +3,6 @@ allprojects {
     group = "org.bravo"
 
     repositories {
-        jcenter()
         mavenCentral()
         mavenLocal()
         maven { url 'https://jitpack.io' }

@@ -27,7 +27,6 @@ fun main(args: Array<String>) {
     }
 }
 
-@KtorExperimentalAPI
 @Suppress("unused") // Referenced in application.conf
 @kotlin.jvm.JvmOverloads
 fun Application.module(testing: Boolean = false) {

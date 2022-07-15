@@ -1,6 +1,7 @@
 buildscript {
     ext {
-        kotlinVersion = "1.4.20"
+        kotlinVersion = "1.6.10"
+        exposedVersion = "0.37.3"
     }
 }
 
@@ -14,7 +15,7 @@ apply plugin: "kotlin"
 dependencies {
     implementation(
             // database library
-            "org.jetbrains.exposed:exposed-core:0.28.1",
+            "org.jetbrains.exposed:exposed-core:$exposedVersion",
 
             // kotlin
             "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion",

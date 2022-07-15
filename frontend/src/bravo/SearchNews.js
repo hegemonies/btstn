@@ -22,10 +22,10 @@ class SearchNews extends React.Component {
 
     newsApiUrl = () => {
         if (baseApiUrl[baseApiUrl.length - 1] === '/') {
-            return baseApiUrl.substring(0, baseApiUrl.length - 1) + '/news'
+            return baseApiUrl.substring(0, baseApiUrl.length - 1) + '/api/news'
         }
 
-        return baseApiUrl + '/news'
+        return baseApiUrl + '/api/news'
     }
 
     handleOnChange(e) {
