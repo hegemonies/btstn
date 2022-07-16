@@ -10,3 +10,6 @@ api-proxy:
 news-grabber:
 	./gradlew --no-daemon news-grabber:shadowJar
 	docker build --tag btstn/news-grabber:dev --file news-grabber/Dockerfile ./news-grabber
+
+all-jib:
+	./gradlew --no-daemon jibDockerBuild

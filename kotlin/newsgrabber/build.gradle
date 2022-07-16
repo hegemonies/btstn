@@ -68,6 +68,9 @@ jib {
     to {
         image = "btstn/news-grabber:dev"
     }
+    from {
+        image = "azul/zulu-openjdk:17.0.3"
+    }
     container {
         user = "1000"
         creationTime = "USE_CURRENT_TIMESTAMP"

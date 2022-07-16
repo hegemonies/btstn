@@ -1,4 +1,4 @@
-FROM openjdk:11.0.9-slim
+FROM azul/zulu-openjdk:17.0.3
 
 ADD build/libs/api-proxy.jar /app/
 
