@@ -1,9 +1,9 @@
 buildscript {
     ext {
-        ktorVersion = "1.5.0"
-        kotlinVersion = "1.6.10"
-        logbackVersion = "1.2.1"
-        exposedVersion = "0.37.3"
+        ktorVersion = "1.6.8"
+        kotlinVersion = "1.7.10"
+        logbackVersion = "1.2.11"
+        exposedVersion = "0.38.2"
     }
 }
 
@@ -11,8 +11,7 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
     id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlinVersion"
-    id "com.google.cloud.tools.jib" version "3.1.4"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
+    id "com.google.cloud.tools.jib" version "3.2.1"
 }
 
 apply plugin: 'kotlin'
@@ -51,10 +50,10 @@ dependencies {
             "org.jetbrains.exposed:exposed-jdbc:$exposedVersion",
 
             // Postgresql driver
-            "org.postgresql:postgresql:42.3.1",
+            'org.postgresql:postgresql:42.3.6',
 
             // ArrowKt
-            "io.arrow-kt:arrow-core:1.0.1",
+            'io.arrow-kt:arrow-core:1.1.2',
 
             // DTO
             project(":kotlin-dto"),
@@ -66,6 +65,9 @@ jib {
     to {
         image = "btstn/api-proxy:dev"
     }
+    from {
+        image = "azul/zulu-openjdk:17.0.2"
+    }
     container {
         user = "1000"
         creationTime = "USE_CURRENT_TIMESTAMP"
@@ -73,14 +75,14 @@ jib {
     allowInsecureRegistries = true
 }
 
-shadowJar {
-    archiveFileName = "api-proxy.jar"
-}
-
-
 compileKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
 }
 compileTestKotlin {
-    kotlinOptions.jvmTarget = "11"
+    kotlinOptions.jvmTarget = "17"
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
 }

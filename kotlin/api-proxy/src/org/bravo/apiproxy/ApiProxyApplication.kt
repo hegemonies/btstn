@@ -8,7 +8,6 @@ import io.ktor.http.content.*
 import io.ktor.jackson.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import io.ktor.util.*
 import io.ktor.util.date.*
 import org.bravo.apiproxy.property.databaseHost
 import org.bravo.apiproxy.property.databasePassword
@@ -84,7 +83,7 @@ fun Application.module(testing: Boolean = false) {
         header("X-Engine", "Ktor") // will send this header with each response
     }
 
-    /* todo: htts for future
+    /* todo: https for future
     install(HSTS) {
         includeSubDomains = true
     }
@@ -107,6 +106,15 @@ fun Application.module(testing: Boolean = false) {
     }
 
     routing {
+        static("/") {
+            staticBasePackage = "frontend"
+            resources(".")
+            defaultResource("index.html")
+            preCompressed(CompressedFileType.BROTLI, CompressedFileType.GZIP) {
+                files(".")
+            }
+        }
+
         news()
 
         install(StatusPages) {
@@ -116,7 +124,6 @@ fun Application.module(testing: Boolean = false) {
             exception<AuthorizationException> { _ ->
                 call.respond(HttpStatusCode.Forbidden)
             }
-
         }
     }
 }
