@@ -7,7 +7,7 @@ build-api-proxy:
 	./gradlew --no-daemon api-proxy:jibDockerBuild
 
 build-news-grabber-db-api:
-	./gradlew --no-daemon news-grabber:jibDockerBuild
+	./gradlew --no-daemon newsgrabber:jibDockerBuild
 
 push-api-proxy:
 	docker tag btstn/api-proxy:dev lt:5000/api-proxy:dev
