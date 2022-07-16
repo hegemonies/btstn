@@ -11,7 +11,6 @@ plugins {
     id 'org.jetbrains.kotlin.jvm' version "$kotlinVersion"
     id 'org.jetbrains.kotlin.plugin.serialization' version "$kotlinVersion"
     id "com.google.cloud.tools.jib" version "3.1.4"
-    id "com.github.johnrengelman.shadow" version "7.1.2"
 }
 
 group "com.bravo"
@@ -76,18 +75,6 @@ jib {
         creationTime = "USE_CURRENT_TIMESTAMP"
     }
     allowInsecureRegistries = true
-}
-
-jar {
-    manifest {
-        attributes(
-                'Main-Class': 'com.bravo.ApplicationKt'
-        )
-    }
-}
-
-shadowJar {
-    archiveFileName = "news-grabber.jar"
 }
 
 test {
