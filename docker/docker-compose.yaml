@@ -72,19 +72,5 @@ services:
     networks:
       - btstnnet
 
-  frontend:
-    image: btstn/frontend:dev
-    restart: always
-    depends_on:
-      - api-proxy
-    ports:
-      - 8090:80
-    environment:
-      - USE_ANTIBOT=cookie
-      - REACT_APP_ENV=prod
-    mem_limit: 32m
-    networks:
-      - btstnnet
-
 networks:
   btstnnet:

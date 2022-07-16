@@ -1,15 +1,20 @@
-all:
-	./gradlew --no-daemon shadowJar
-	docker build --tag btstn/api-proxy:dev --file api-proxy/Dockerfile ./api-proxy
-	docker build --tag btstn/news-grabber:dev --file news-grabber/Dockerfile ./news-grabber
+.PHONY: api-proxy
 
-api-proxy:
-	./gradlew --no-daemon api-proxy:shadowJar
-	docker build --tag btstn/api-proxy:dev --file api-proxy/Dockerfile ./api-proxy
-
-news-grabber:
-	./gradlew --no-daemon news-grabber:shadowJar
-	docker build --tag btstn/news-grabber:dev --file news-grabber/Dockerfile ./news-grabber
-
-all-jib:
+build-all-jib:
 	./gradlew --no-daemon jibDockerBuild
+
+build-api-proxy:
+	./gradlew --no-daemon api-proxy:jibDockerBuild
+
+build-news-grabber-db-api:
+	./gradlew --no-daemon news-grabber:jibDockerBuild
+
+push-api-proxy:
+	docker tag btstn/api-proxy:dev lt:5000/api-proxy:dev
+	docker push lt:5000/api-proxy:dev
+
+push-news-grabber:
+	docker tag btstn/news-grabber:dev lt:5000/news-grabber:dev
+	docker push lt:5000/news-grabber:dev
+
+push-all: push-api-proxy push-news-grabber
