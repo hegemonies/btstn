@@ -1,5 +1,6 @@
 import React from "react";
 import {Grid, List, ListItem, ListItemText, Typography} from "@material-ui/core";
+import ReactMarkdown from 'react-markdown'
 
 const listStyle = {
     paddingLeft: 0,
@@ -28,7 +29,9 @@ class ViewNews extends React.Component {
             <ListItem key={id} style={listItemStyle}>
                 <ListItemText primary={
                     <Typography style={messageStyle}>
-                        {message}
+                        <ReactMarkdown>
+                            {message}
+                        </ReactMarkdown>
                     </Typography>
                 } secondary={renderDate(date) + ' from ' + source}/>
             </ListItem>
