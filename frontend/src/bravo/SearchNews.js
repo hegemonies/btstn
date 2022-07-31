@@ -6,18 +6,19 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import baseApiUrl from "./Consts";
 import MoreNewsButton from "./MoreNewsButton";
+import { Alert } from "@mui/material";
 
 class SearchNews extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {news: [], tag: '', limit: 10, offset: 0};
+        this.state = {news: [], tag: '', limit: 10, offset: 0, error: null};
         this.handleOnChange = this.handleOnChange.bind(this);
         this.findNews = this.findNews.bind(this);
         this.addMoreNews = this.addMoreNews.bind(this);
     }
 
     defaultState = () => {
-        return {news: [], tag: '', limit: 10, offset: 0}
+        return {news: [], tag: '', limit: 10, offset: 0, error: null}
     }
 
     newsApiUrl = () => {
@@ -36,13 +37,17 @@ class SearchNews extends React.Component {
         e.preventDefault();
 
         if (this.state.tag.length === 0) {
+            this.setState({
+                error: "Tag must not be empty"
+            })
             return;
         }
 
         this.setState({
             news: this.defaultState().news,
             offset: this.defaultState().offset,
-            limit: this.defaultState().limit
+            limit: this.defaultState().limit,
+            error: null
         });
 
         const requestOptions = {
@@ -102,6 +107,13 @@ class SearchNews extends React.Component {
             .then(result => result.json())
             .then(value => {
 
+                if (value.code !== null) {
+                    this.setState({
+                        error: value.message
+                    })
+                    return
+                }
+
                 let countMessages = this.state.news.length
 
                 value.view.map(item => {
@@ -118,8 +130,19 @@ class SearchNews extends React.Component {
                     })
                 })
             }, error => {
+                this.setState({
+                    error: error.message
+                })
                 console.log(error)
             })
+    }
+
+    Show_alert() { 
+        if (this.state.error === null) {
+            return null
+        } else {
+            <Alert variant="outlined" severity="error">Server error: {this.state.error}</Alert>
+        }
     }
 
     render() {
@@ -144,6 +167,8 @@ class SearchNews extends React.Component {
                         Search
                     </Button>
                 </form>
+
+                {/* <this.Show_alert/> */}
 
                 <ViewNews news={this.state.news}/>
 

@@ -13,11 +13,11 @@ const listItemStyle = {
 };
 
 const messageStyle = {
-    whiteSpace: 'pre-line',
+    // whiteSpace: 'pre-line',
 };
 
 function renderDate(timestamp) {
-    let datetime = new Date(timestamp * 1000);
+    let datetime = new Date(timestamp);
     return datetime.toUTCString()
 }
 
