@@ -1,0 +1,8 @@
+<div *ngFor="let newsItem of news">
+  <tui-island>
+      <p class="tui-island__paragraph">
+        <markdown ngPreserveWhitespaces class="news-message"> {{ newsItem.message }} </markdown>
+      </p>
+      <h3 class="tui-island__paragraph">{{ newsItem.sourceWithDateTime }}</h3>
+  </tui-island>
+</div>

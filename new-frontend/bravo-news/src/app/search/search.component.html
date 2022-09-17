@@ -1,0 +1,41 @@
+<form [formGroup]="inputForm">
+
+  <div class="tui-container tui-container_adaptive">
+
+    <div class="tui-row tui-row_adaptive row">
+
+      <div class="tui-col_xs-2 tui-col_md-2 tui-col_lg-2 input-field">
+        <tui-input
+          tuiTextfieldExampleText="INTC"
+          formControlName="tagValue"
+          tuiHintContent="Enter the stock tag. For example, Intel company have INTC tag"
+          [tuiTextfieldCleaner]="true"
+          #tagValue
+        >
+          Type a stock tag&nbsp;
+          <span class="tui-required"></span>
+          <input
+            tuiTextfield
+            placeholder="intc"
+            type="text"
+          />
+        </tui-input>
+      </div>
+  
+      <div class="tui-col_xs-2 tui-col_md-2 tui-col_lg-2">
+        <button
+          tuiButton
+          size="l"
+          type="submit"
+          class="tui-space_right-2 tui-space_bottom-2"
+          (click)="searchNews(tagValue.value)"
+        >
+          Search
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+</form>

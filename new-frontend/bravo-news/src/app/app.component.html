@@ -1,0 +1,23 @@
+<body>
+
+  <tui-root>
+  
+    <div class="tui-container_adaptive">
+      <!-- Logo -->
+      <app-header></app-header>
+  
+      <!-- Search Button -->
+      <app-search (newsEmitter)="setNews($event)"></app-search>
+      
+      <!-- News view -->
+      <app-news-view [news]="news" class="news-view"></app-news-view>
+      
+      <!-- More News Button -->
+      <div *ngIf="this.tag">
+        <app-more (eventEmitter)="moreNews()"></app-more>
+      </div>
+    </div>
+  
+  </tui-root>
+
+</body>
