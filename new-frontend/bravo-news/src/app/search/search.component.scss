@@ -1,0 +1,9 @@
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.input-field {
+  flex-grow: 2;
+}
