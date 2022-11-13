@@ -13,3 +13,5 @@ kotlin/kotlin-dto/.idea/
 
 kotlin/build/
 kotlin/.gradle/
+
+.DS_Store
