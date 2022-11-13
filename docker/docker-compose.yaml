@@ -21,7 +21,7 @@ services:
     command: "postgres -c config_file=/etc/postgresql/postgresql.conf"
 
   api-proxy:
-    image: lt:5000/api-proxy:dev
+    image: hegemonies/btstn-api-proxy
     restart: always
     depends_on:
       news-grabber-db-api:
@@ -40,7 +40,7 @@ services:
       - btstnnet
 
   news-grabber-db-api:
-    image: lt:5000/news-grabber:dev
+    image: hegemonies/btstn-news-grabber
     restart: always
     depends_on:
       db:
@@ -56,7 +56,7 @@ services:
       - btstnnet
 
   news-grabber-telegram-api:
-    image: lt:5000/news-grabber-python:latest
+    image: hegemonies/btstn-news-grabber-python
     restart: always
     depends_on:
       news-grabber-db-api:
