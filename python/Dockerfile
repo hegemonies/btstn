@@ -13,4 +13,4 @@ RUN apt update && \
 # Install project
 RUN /root/.local/bin/poetry install
 
-CMD /root/.locla/bin/poetry run python3 /app/telegram-scrapper.py
+CMD /root/.local/bin/poetry run python3 /app/telegram-scrapper.py
